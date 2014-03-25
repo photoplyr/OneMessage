@@ -31,7 +31,16 @@
 {
     [super viewDidLoad];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadMessages) name:NEWMESSAGE object:nil];
+    
     appdelegate = [[UIApplication sharedApplication] delegate];
+}
+
+-(void) loadMessages
+{
+    self.friends = [appdelegate getFriends];
+    
+    [self.tableView reloadData];
 }
 
 -(void) viewWillAppear:(BOOL)animated

@@ -130,7 +130,7 @@
                                                    description:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
                                                           type:TWMessageBarMessageTypeInfo];
     
-    [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"token"] withKey:[userInfo objectForKey:@"key"] withBadge:1];
+    [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withKey:[userInfo objectForKey:@"key"] withBadge:1];
     
     NSLog(@"didReceiveRemoteNotification");
 }
@@ -230,6 +230,7 @@
     {
         Friends *friend = [myProfile lastObject];
         int badgeCount =  [friend.badge intValue];
+         friend.name = name;
         badgeCount = badgeCount + badge;
         
         if (badge == -1)
