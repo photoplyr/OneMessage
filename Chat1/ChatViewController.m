@@ -431,7 +431,7 @@
 //
 - (void)configureCell:(JSBubbleMessageCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
-    if ([cell messageType] == JSBubbleMessageTypeOutgoing)
+    //if ([cell messageType] == JSBubbleMessageTypeOutgoing)
     {
         cell.bubbleView.textView.textColor = [UIColor whiteColor];
         
@@ -440,7 +440,9 @@
             NSMutableDictionary *attrs = [cell.bubbleView.textView.linkTextAttributes mutableCopy];
             [attrs setValue:[UIColor whiteColor] forKey:NSForegroundColorAttributeName];
             
-            cell.bubbleView.textView.linkTextAttributes = attrs;
+            cell.bubbleView.textView.linkTextAttributes = @{
+                                                            NSForegroundColorAttributeName : [UIColor whiteColor],
+                                                            NSUnderlineStyleAttributeName: [NSNumber numberWithInt: NSUnderlineStyleSingle]};
         }
     }
     
@@ -458,7 +460,7 @@
 #if TARGET_IPHONE_SIMULATOR
     cell.bubbleView.textView.dataDetectorTypes = UIDataDetectorTypeNone;
 #else
-    cell.bubbleView.textView.dataDetectorTypes = UIDataDetectorTypeNone;
+    cell.bubbleView.textView.dataDetectorTypes = UIDataDetectorTypeAll;
 #endif
 }
 

@@ -80,12 +80,6 @@
 }
 
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 65.00f;
-}
-
-
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     // This will create a "invisible" footer
@@ -102,21 +96,6 @@
     cell.detailTextLabel.text = [NSString stringWithFormat:@"Messages %@", [friend.badge stringValue]];
     cell.imageView.image = [JSAvatarImageFactory classicAvatarImageNamed:@"profile" croppedToCircle:YES];
     return cell;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 65)];
-    header.backgroundColor = UIColorFromRGB(0x515151);
-    
-    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(0, 40, 320, 35)];
-    title.text = @"FRIENDS";
-    title.textAlignment = NSTextAlignmentCenter;
-    title.textColor = [UIColor whiteColor];
-    [header addSubview:title ];
-    
-    title.center = CGPointMake(320/2, 65/2+10);
-    return header;
 }
 
 // All done. Time to remove the public key from the keychain.
