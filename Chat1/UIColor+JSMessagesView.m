@@ -33,8 +33,8 @@
 + (UIColor *)js_bubbleGreenColor
 {
     return [UIColor colorWithHue:130.0f / 360.0f
-                      saturation:0.68f
-                      brightness:0.80f
+                      saturation:1.68f
+                      brightness:1.0f
                            alpha:1.0f];
 }
 
