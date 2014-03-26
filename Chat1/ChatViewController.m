@@ -12,7 +12,7 @@
 #import "Messager.h"
 #import "NuRSAKey.h"
 
-#define  MAX_ENTRIES_LOADED 100
+
 @interface ChatViewController ()
 {
     AppDelegate *appdelegate;
@@ -35,7 +35,6 @@
     
     [[JSBubbleView appearance] setFont:[UIFont systemFontOfSize:16.0f]];
     
-    //self.title = APPNAME;
     self.messageInputView.textView.placeHolder = @"New Message";
     self.sender = @"guest";
     
@@ -67,7 +66,6 @@
     [currentInstallation saveInBackground];
 }
 
-
 -(void) subscribe:(NSString *) sid
 {
     // When users indicate they are Giants fans, we subscribe them to that channel.
@@ -75,7 +73,6 @@
     [currentInstallation addUniqueObject:sid forKey:@"channels"];
     [currentInstallation saveInBackground];
 }
-
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -85,6 +82,13 @@
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.sender = [defaults stringForKey:APPNAME];
+    
+    
+    if (appdelegate.tokentarget == nil)
+    {
+        Me *me = [appdelegate getMe];
+        appdelegate.tokentarget = me.lastchattoken;
+    }
     
     if (self.sender == nil)
     {
@@ -98,9 +102,6 @@
 #pragma mark - Actions
 -(void) loadMessages:(NSNotification *)note
 {
-     NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-        self.title = [[prefs objectForKey:@"name"] uppercaseString];
-    
     self.messages = [[NSMutableArray alloc] init];
     
     [self loadLocalChat];
@@ -111,53 +112,79 @@
     [appdelegate.drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
 }
 
-- (void)loadLocalChat
+-(void) loadSymKey
 {
-    className = APPNAME;
-    
     if (appdelegate.tokentarget == nil)
         return;
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",appdelegate.tokensource,appdelegate.tokentarget,appdelegate.tokensource,appdelegate.tokentarget];
+    Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    self.title = [friend.name uppercaseString];
+    
+    Me *me = [appdelegate getMe];
+    
+    if (me.token == nil)
+        return;
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"Conversations" predicate:predicate];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+     {
+         if (!error)
+         {
+             
+             if ([objects count]  == 0)
+             {
+                 // Set the sym key
+                 appdelegate.symkey = me.symkey;
+                 
+                 // Time to make a conversation
+                 PFObject *newMessage = [PFObject objectWithClassName:@"Conversations"];
+                 [newMessage setObject:me.token forKey:@"sourceToken"];
+                 [newMessage setObject:friend.token forKey:@"targetToken"];
+                 [newMessage setObject:me.symkey forKey:@"symkey"];
+                 [newMessage saveInBackground];
+             }
+             else
+             {
+                 for(id convers in objects)
+                 {
+                     appdelegate.symkey = [convers objectForKey:@"symkey"];
+                     break;
+                 }
+                 
+             }
+         }
+         else
+         {
+             appdelegate.symkey = nil;
+             // Log details of the failure
+             NSLog(@"Error: %@ %@", error, [error userInfo]);
+         }
+     }];
+}
+
+- (void)loadLocalChat
+{
+    if (appdelegate.tokentarget == nil)
+        return;
+    
+    [self loadSymKey];
+    
+    Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    self.title = [friend.name uppercaseString];
+    
+    className = APPNAME;
+    
+    Me *me = [appdelegate getMe];
+    
+    if (me.token == nil)
+        return;
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
     
     PFQuery *query = [PFQuery queryWithClassName:className predicate:predicate];
-    
-    // If no objects are loaded in memory, we look to the cache first to fill the table
-    // and then subsequently do a query against the network.
-//    if ([self.messages count] == 0)
-//    {
-//        query.cachePolicy = kPFCachePolicyCacheThenNetwork;
-//        
-//        [query orderByAscending:@"createdAt"];
-//        
-//        NSLog(@"Trying to retrieve from cache");
-//        
-//        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-//         {
-//             if (!error)
-//             {
-//                 // The find succeeded.
-//                 NSLog(@"Successfully retrieved %d chats from cache.", objects.count);
-//                 [self.messages removeAllObjects];
-//                 
-//                 for(id message in objects)
-//                 {
-//                     [self.messages addObject:[[JSMessage alloc] initWithText:[self decryptMessage:[message objectForKey:@"cryptext"]] sender:[message objectForKey:@"userName"] date:[message objectForKey:@"date"]]];
-//                 }
-//                 
-//                 [self.tableView reloadData];
-//                 
-//                 [self scrollToBottomAnimated:YES];
-//             }
-//             else
-//             {
-//                 // Log details of the failure
-//                 NSLog(@"Error: %@ %@", error, [error userInfo]);
-//             }
-//         }];
-//        
-//        return;
-//    }
     
     __block int totalNumberOfEntries = 0;
     [query orderByAscending:@"createdAt"];
@@ -181,7 +208,7 @@
                  }
                  else
                  {
-                     theLimit = totalNumberOfEntries - [self.messages count];
+                     theLimit = (int)(totalNumberOfEntries - [self.messages count]);
                  }
                  
                  query.limit = theLimit;
@@ -191,7 +218,7 @@
                       if (!error)
                       {
                           // The find succeeded.
-                          NSLog(@"Successfully retrieved %d chats.", objects.count);
+                          NSLog(@"Successfully retrieved %lu chats.", (unsigned long)objects.count);
                           
                           if ([objects count] != [self.messages count])
                           {
@@ -217,10 +244,9 @@
              
          } else {
              // The request failed, we'll keep the chatData count?
-             number = [self.messages count];
+             number = (int)[self.messages count];
          }
      }];
-    
 }
 
 
@@ -233,62 +259,75 @@
 
 #pragma mark - Messages view delegate: REQUIRED
 - (NSString *)decryptMessage:(NSData *)blob {
-    return [[NSString alloc] initWithData:blob encoding:NSUTF8StringEncoding];
+    NSString *test = [self _decryptMessage:blob];
+    
+    return  test;
+    
+//    return [[NSString alloc] initWithData:blob encoding:NSUTF8StringEncoding];
 }
 
 
 
 -(NSData *) encryptMessage:(NSString *) blog
 {
-    return  [blog dataUsingEncoding: NSUTF8StringEncoding];
+    NSData *test = [self _encryptMessage:blog];
+     return  test;
+    
+//    return  [blog dataUsingEncoding: NSUTF8StringEncoding];
 }
 
 - (NSString *)_decryptMessage:(NSData *)blob {
-	NSMutableDictionary * message = nil;
-	NSString * error = nil;
-    //	NSString * peerName = nil;
-	BOOL verified = NO;
-	CCOptions pad = 0;
-	SecKeyRef publicKeyRef = NULL;
-	NSData * plainText = nil;
+    NSMutableDictionary * message = nil;
+    NSString * error = nil;
     
- 	// THIS USES THE PUBLIC KEY!!!!!
-	message = [NSPropertyListSerialization propertyListFromData:blob mutabilityOption:NSPropertyListMutableContainers format:nil errorDescription:&error];
-	
-	if (!error) {
-		
-        // Add peer public key.
-		publicKeyRef = [[SecKeyWrapper sharedWrapper] addPeerPublicKey:appdelegate.tokensource
-															   keyBits:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kPubTag]]];
+    BOOL verified = NO;
+    CCOptions pad = 0;
+    SecKeyRef publicKeyRef = NULL;
+    NSData * plainText = nil;
+    
+//  Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    Me *me = [appdelegate getMe];
+    
+    // THIS USES THE PUBLIC KEY!!!!!
+    message = [NSPropertyListSerialization propertyListFromData:blob mutabilityOption:NSPropertyListMutableContainers format:nil errorDescription:&error];
+    
+    if (!error) {
         
-		// Get the unwrapped symmetric key.
-		NSData * symmetricKey = [[SecKeyWrapper sharedWrapper] unwrapSymmetricKey:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kSymTag]]];
-		
-		// Get the padding PKCS#7 flag.
-		pad = [(NSNumber *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kPadTag]] unsignedIntValue];
-		
-		// Get the encrypted message and decrypt.
-		plainText = [[SecKeyWrapper sharedWrapper]	doCipher:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kMesTag]]
+        // Add peer public key.
+        publicKeyRef = [[SecKeyWrapper sharedWrapper] addPeerPublicKey:me.token
+                                                               keyBits:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kPubTag]]];
+        
+        // Get the unwrapped symmetric key.
+        NSData * symmetricKey = appdelegate.symkey;
+        
+        // Get the padding PKCS#7 flag.
+        pad = [(NSNumber *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kPadTag]] unsignedIntValue];
+        
+        // Get the encrypted message and decrypt.
+        plainText = [[SecKeyWrapper sharedWrapper]	doCipher:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kMesTag]]
                                                         key:symmetricKey
                                                     context:kCCDecrypt
                                                     padding:&pad];
-		
-		
-		// Verify the signature.
-		verified = [[SecKeyWrapper sharedWrapper] verifySignature:plainText
-														secKeyRef:publicKeyRef
-														signature:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kSigTag]]];
-		if (!verified)
+        
+        
+        // Verify the signature.
+        verified = [[SecKeyWrapper sharedWrapper] verifySignature:plainText
+                                                        secKeyRef:publicKeyRef
+                                                        signature:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kSigTag]]];
+    
+        [[SecKeyWrapper sharedWrapper] removePeerPublicKey:me.token];
+        
+        if (!verified)
             return  nil;
         
-  		// Clean up by removing the peer public key.
-        [[SecKeyWrapper sharedWrapper] removePeerPublicKey:appdelegate.tokensource];
-	} else {
-		LOGGING_FACILITY( 0, error );
-		return  nil;
-	}
-	
-	return [[NSString alloc] initWithData:plainText encoding:NSASCIIStringEncoding];
+        // Clean up by removing the peer public key.
+        
+    } else {
+        LOGGING_FACILITY( 0, error );
+        return  nil;
+    }
+    
+    return [[NSString alloc] initWithData:plainText encoding:NSASCIIStringEncoding];
 }
 
 
@@ -300,18 +339,21 @@
     
     NSMutableDictionary * messageHolder = [[NSMutableDictionary alloc] init];
     
+    Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    
     // Acquire handle to public key.
-	peerPublicKeyRef = [[SecKeyWrapper sharedWrapper] addPeerPublicKey:appdelegate.tokentarget keyBits:appdelegate.targetkey];
-
-    NSData * symmetricKey = [[SecKeyWrapper sharedWrapper] getSymmetricKeyBytes];
+    peerPublicKeyRef = [[SecKeyWrapper sharedWrapper] addPeerPublicKey:friend.token keyBits:friend.publickey];
+    
+    //NSData * symmetricKey = [[SecKeyWrapper sharedWrapper] getSymmetricKeyBytes];
+    NSData * symmetricKey = appdelegate.symkey;
     
     NSData *plainText = [blog dataUsingEncoding:NSUTF8StringEncoding];
     
     LOGGING_FACILITY( peerPublicKeyRef, @"Could not establish client handle to public key." );
-	
+    
     // Add the public key.
     [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] getPublicKeyBits]
-                      forKey:[NSString stringWithUTF8String:(const char *)kPubTag]];
+    forKey:[NSString stringWithUTF8String:(const char *)kPubTag]];
     
     // Add the signature to the message holder.
     [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] getSignatureBytes:plainText]
@@ -330,15 +372,22 @@
                       forKey:[NSString stringWithUTF8String:(const char *)kSymTag]];
     
     NSData * message = [NSPropertyListSerialization dataFromPropertyList:messageHolder format:NSPropertyListBinaryFormat_v1_0 errorDescription:&error];
-
+    
+    [[SecKeyWrapper sharedWrapper] removePeerPublicKey:friend.token];
     return message;
 }
 
 - (void)didSendText:(NSString *)text fromSender:(NSString *)sender onDate:(NSDate *)date
 {
+    Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    Me *me = [appdelegate getMe];
+    
     NSData * message = nil;
-  
+    
     text = [text capitalizedString];
+    
+    if ([text length] < 1)
+        return;
     
     [self.messages addObject:[[JSMessage alloc] initWithText:text sender:sender date:date]];
     
@@ -358,10 +407,10 @@
     
     [newMessage setObject:sender forKey:@"userName"];
     
-    [newMessage setObject:appdelegate.tokensource forKey:@"sourceToken"];
-    [newMessage setObject:appdelegate.tokentarget forKey:@"targetToken"];
+    [newMessage setObject:me.token forKey:@"sourceToken"];
+    [newMessage setObject:friend.token forKey:@"targetToken"];
     
-    [newMessage setObject:appdelegate.tokensource forKey:@"device"];
+    [newMessage setObject:me.token forKey:@"device"];
     [newMessage setObject:date forKey:@"date"];
     [newMessage saveInBackground];
     
@@ -371,11 +420,8 @@
                            @"Message from %@",sender],@"alert" ,
                           @"Increment", @"badge",
                           sender, @"name",
-                          appdelegate.tokensource,@"tokensource",
+                          me.token,@"tokensource",
                           nil];
-  
-//    appdelegate.tokensource, @"token",
-//    appdelegate.publickey, @"key",
     
     // Create time interval
     NSTimeInterval interval = 60*60*24*7; // 1 week
@@ -385,9 +431,10 @@
     [push setChannels:[NSArray arrayWithObjects:appdelegate.tokentarget, nil]];
     [push setData:data];
     [push sendPushInBackground];
-
+    
     text = @"";
     [self scrollToBottomAnimated:YES];
+    
 }
 
 - (JSBubbleMessageType)messageTypeForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -511,13 +558,14 @@
     isShowingAlertView = YES;
 }
 
-
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+    Me *me = [appdelegate getMe];
+    
     if (buttonIndex != 0)
     {
         
-        if (appdelegate.tokensource == nil)
+        if (me.token == nil)
         {
             NSLog(@"---------- ERROR NO SOURCE TOKEN --------------");
             return;
@@ -531,14 +579,15 @@
         isShowingAlertView = NO;
         
         //Save Data to Parse
+        me.name = self.sender;
+        [appdelegate saveContext];
         
         // going for the parsing
         PFObject *newMessage = [PFObject objectWithClassName:@"Users"];
-        //[newMessage setObject:appdelegate.tokentarget forKey:@"tokentarget"];
-        [newMessage setObject:appdelegate.tokensource forKey:@"tokensource"];
-        //[newMessage setObject:appdelegate.targetkey forKey:@"targetkey"];
-        //[newMessage setObject: appdelegate.symkey forKey:@"symkey"];
-        [newMessage setObject:self.sender forKey:@"userName"];
+        [newMessage setObject:me.token forKey:@"tokensource"];
+        [newMessage setObject: me.publickey forKey:@"publickeysource"];
+        [newMessage setObject: me.symkey forKey:@"symkeysource"];
+        [newMessage setObject:me.name forKey:@"userName"];
         [newMessage saveInBackground];
         
     }

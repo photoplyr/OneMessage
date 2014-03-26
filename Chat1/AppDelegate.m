@@ -21,15 +21,7 @@
 {
     [Parse setApplicationId:@"7d2nKN8Cqw4hhr5EDGhELPlWGFZt0947TUeFXTVU"
                   clientKey:@"F0emzjq4GiXfANuuhAdsnmE7JaUmuFlRYg7aYTCp"];
-    
-    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
- 
-    self.tokentarget = [prefs objectForKey:@"tokentarget"];
-    self.tokensource = [prefs objectForKey:@"tokensource"];
-    self.targetkey = [prefs objectForKey:@"targetkey"];
-    self.symkey = [prefs objectForKey:@"symkey"];
-    self.tokentarget = [prefs objectForKey:@"tokentarget"];
-    
+
     // Register for remote notifications
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
@@ -62,8 +54,9 @@
         block = [[MMExampleDrawerVisualStateManager sharedManager]
                  drawerVisualStateBlockForDrawerSide:drawerSide];
         
-         [[NSNotificationCenter defaultCenter] postNotificationName:HIDEKEYBOARD object:nil];
-        if(block){
+        [[NSNotificationCenter defaultCenter] postNotificationName:HIDEKEYBOARD object:nil];
+        if(block)
+        {
             block(drawerController, drawerSide, percentVisible);
         }
     }];
@@ -74,6 +67,8 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
+    Me *me = [self getMe];
+    
     // Store the deviceToken in the current Installation and save it to Parse.
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation setDeviceTokenFromData:deviceToken];
@@ -82,31 +77,30 @@
     NSString *did =[[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""]
                      stringByReplacingOccurrencesOfString:@">" withString:@""]
                     stringByReplacingOccurrencesOfString: @" " withString: @""];
-    self.tokensource = [NSString stringWithFormat:@"ID_%@",did];
+
+    me.token = [NSString stringWithFormat:@"ID_%@",did];
     
-//     SecKeyRef sec = [[SecKeyWrapper sharedWrapper] getPublicKeyRef];
-     NSData *key = [[SecKeyWrapper sharedWrapper] getPublicKeyBits];
-    
-    if (key != nil)
-        self.publickey = key;
-    
-    // Check to see if keys have been generated.
+    // Genereate the Symmetric Key used to wrapp the package
     if (	![[SecKeyWrapper sharedWrapper] getPublicKeyRef]		||
         ![[SecKeyWrapper sharedWrapper] getPrivateKeyRef]		||
-        ![[SecKeyWrapper sharedWrapper] getSymmetricKeyBytes]) {
-		
+        ![[SecKeyWrapper sharedWrapper] getSymmetricKeyBytes])
+    {
+        NSData *symkey;
+        NSData *publickey;
+        
         [[SecKeyWrapper sharedWrapper] generateKeyPair:kAsymmetricSecKeyPairModulusSize];
 		[[SecKeyWrapper sharedWrapper] generateSymmetricKey];
         
-//        sec = [[SecKeyWrapper sharedWrapper] getPublicKeyRef];
-        key = [[SecKeyWrapper sharedWrapper] getPublicKeyBits];
+        symkey = [[SecKeyWrapper sharedWrapper] getSymmetricKeyBytes];
+        publickey = [[SecKeyWrapper sharedWrapper] getPublicKeyBits];
         
-        self.publickey = key;
-        
+        me.symkey = symkey;
+        me.publickey = publickey;
+          [self saveContext];
         NSLog(@"Build Key pair");
     }
-
     
+    [self saveContext];
     [[NSNotificationCenter defaultCenter] postNotificationName:CHANNELREADY object:[NSString stringWithFormat:@"ID_%@",did]];
     
     NSLog(@"Push Registered : %@",did);
@@ -122,7 +116,7 @@
         [PFAnalytics trackAppOpenedWithRemoteNotificationPayload:userInfo];
     }
     
-    //AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     
     [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:userInfo];
     
@@ -130,7 +124,9 @@
                                                    description:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
                                                           type:TWMessageBarMessageTypeInfo];
     
-    [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withKey:[userInfo objectForKey:@"key"] withBadge:1];
+    [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:nil withPubKey:nil withBadge:1];
+    
+  //  [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:[userInfo objectForKey:@"key"] withBadge:1];
     
     NSLog(@"didReceiveRemoteNotification");
 }
@@ -195,9 +191,30 @@
     return myProfile;
 }
 
--(void) addFriend:(NSString *) name withToken:(NSString *) token withKey:(NSData *) key withBadge:(int) badge
+-(Friends *) getFriend:(NSString *) friendToken
 {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"token" ascending:YES];
+    NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
+    [fetchRequest setSortDescriptors:sortDescriptors];
+    
+    fetchRequest.predicate = [NSPredicate predicateWithFormat:@"token = %@",friendToken];
+    
+    NSEntityDescription *entity = [NSEntityDescription
+                                   entityForName:@"Friends" inManagedObjectContext:self.managedObjectContext];
+    
+    [fetchRequest setEntity:entity];
+    NSError *error;
+    
+    NSArray *myProfile = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    
+    Friends *friend = [myProfile lastObject];
+    return friend;
+}
+
+-(void) addFriend:(NSString *) name withToken:(NSString *) token withSymKey:(NSData *) symkey  withPubKey:(NSData *)pubkey withBadge:(int) badge
+{
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"token" ascending:YES];
@@ -210,10 +227,10 @@
                                    entityForName:@"Friends" inManagedObjectContext:self.managedObjectContext];
     
     [fetchRequest setEntity:entity];
+    
     NSError *error;
     
     NSArray *myProfile = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-    
     
     if ([myProfile count] == 0){
         
@@ -223,23 +240,25 @@
         
         friend.name = name;
         friend.token = token;
-        friend.key = key;
+        friend.symkey = symkey;
+        friend.publickey = pubkey;
         friend.badge = [NSNumber numberWithInt:0];
     }
     else
     {
         Friends *friend = [myProfile lastObject];
         int badgeCount =  [friend.badge intValue];
-         friend.name = name;
+        friend.name = name;
         badgeCount = badgeCount + badge;
         
         if (badge == -1)
-             friend.badge = [NSNumber numberWithInt:0];
-            else
-        friend.badge = [NSNumber numberWithInt:badgeCount];
+            friend.badge = [NSNumber numberWithInt:0];
+        else
+            friend.badge = [NSNumber numberWithInt:badgeCount];
         
         [self saveContext];
     }
+    
 }
 
 -(void) addMessage:(NSString *) message from:(NSString *)siod to:(NSString *)toid forDate:(NSDate *) date
@@ -278,7 +297,41 @@
     NSArray *myProfile = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     
     return  myProfile;
+}
+
+-(Me *) getMe
+{
+    Me *me;
     
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
+    [fetchRequest setSortDescriptors:sortDescriptors];
+    
+    
+    NSEntityDescription *entity = [NSEntityDescription
+                                   entityForName:@"Me" inManagedObjectContext:self.managedObjectContext];
+    
+    [fetchRequest setEntity:entity];
+    NSError *error;
+    
+    NSArray *myProfile = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    
+    if ([myProfile count] == 0)
+    {
+        me = [NSEntityDescription
+                    insertNewObjectForEntityForName:@"Me"
+                    inManagedObjectContext:self.managedObjectContext];
+        
+        [self saveContext];
+    }
+    else
+    {
+        me = [myProfile lastObject];
+    }
+    
+    return me;
 }
 
 - (void)saveContext
@@ -340,7 +393,7 @@
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
         
         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
-       // NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES};
+        // NSDictionary *options = @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES};
         
         /*
          Replace this implementation with code to handle the error appropriately.

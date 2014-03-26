@@ -1,20 +1,21 @@
 //
-//  Friends.m
+//  Me.m
 //  OneMessage
 //
-//  Created by Troy Simon on 3/25/14.
+//  Created by Troy Simon on 3/26/14.
 //  Copyright (c) 2014 Troy Simon. All rights reserved.
 //
 
-#import "Friends.h"
+#import "Me.h"
 
 
-@implementation Friends
+@implementation Me
 
 @dynamic badge;
-@dynamic symkey;
 @dynamic name;
-@dynamic token;
 @dynamic publickey;
+@dynamic symkey;
+@dynamic token;
+@dynamic lastchattoken;
 
 @end

@@ -3,25 +3,25 @@
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "beta_29.png",
+      "filename" : "icon-chat-3.png",
       "scale" : "1x"
     },
     {
       "size" : "29x29",
       "idiom" : "iphone",
-      "filename" : "beta_58-1.png",
+      "filename" : "icon-chat-2.png",
       "scale" : "2x"
     },
     {
       "size" : "40x40",
       "idiom" : "iphone",
-      "filename" : "beta_80.png",
+      "filename" : "icon-chat-1.png",
       "scale" : "2x"
     },
     {
       "size" : "60x60",
       "idiom" : "iphone",
-      "filename" : "beta_120.png",
+      "filename" : "icon-chat.png",
       "scale" : "2x"
     },
     {

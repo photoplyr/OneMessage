@@ -50,6 +50,8 @@
 
 -(void) loadFriends
 {
+    Me *me = [appdelegate getMe];
+    
     NSMutableArray *friends = [[NSMutableArray alloc] init];
     
     PFQuery *query = [PFQuery queryWithClassName:@"Users"];
@@ -70,9 +72,9 @@
              
              for(id friend in objects)
              {
-                 if (![[friend objectForKey:@"tokensource"] isEqualToString:appdelegate.tokensource])
+                 if (![[friend objectForKey:@"tokensource"] isEqualToString:me.token])
                  {
-                     [appdelegate addFriend:[friend objectForKey:@"userName"] withToken:[friend objectForKey:@"tokensource"] withKey:[friend objectForKey:@"key"]  withBadge:0];
+                     [appdelegate addFriend:[friend objectForKey:@"userName"] withToken:[friend objectForKey:@"tokensource"] withSymKey:[friend objectForKey:@"symkeysource"] withPubKey:[friend objectForKey:@"publickeysource"] withBadge:0];
                  }
              }
              
@@ -108,28 +110,21 @@
 }
 
 // All done. Time to remove the public key from the keychain.
-//[[SecKeyWrapper sharedWrapper] removePeerPublicKey:peer];
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     Friends *friend = [self.friends objectAtIndex:indexPath.row];
+    Me *me = [appdelegate getMe];
+    
+    me.lastchattoken = friend.token;
+    
     appdelegate.tokentarget = friend.token;
-    appdelegate.targetkey = friend.key;
     
    [appdelegate closeDrawer];
     
-    NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+   friend.badge = [NSNumber numberWithInt:-1];
+   [appdelegate saveContext];
     
-    [prefs setObject:appdelegate.tokentarget forKey:@"tokentarget"];
-    [prefs setObject:appdelegate.tokensource forKey:@"tokensource"];
-    [prefs setObject:appdelegate.targetkey forKey:@"targetkey"];
-    [prefs setObject: appdelegate.symkey forKey:@"symkey"];
-    [prefs setObject:friend.name forKey:@"name"];
-    [prefs synchronize];
-    
-    [appdelegate addFriend:friend.name withToken:appdelegate.tokentarget withKey:friend.key withBadge:-1];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:friend.name];
+   [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:friend.name];
 }
 
 - (void)didReceiveMemoryWarning

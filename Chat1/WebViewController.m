@@ -104,10 +104,10 @@
     
     if ([token length] > 0)
     {
-        appdelegate.tokensource = token;
-        
-        [UserProxy instance].sessionKey = token;
-        [[PersistentDataProxy instance] saveLocalData];
+//        appdelegate.tokensource = token;
+//        
+//        [UserProxy instance].sessionKey = token;
+//        [[PersistentDataProxy instance] saveLocalData];
         
         ChatViewController *v = [self.storyboard instantiateViewControllerWithIdentifier:@"chatwindow"];
         [self.navigationController pushViewController:v animated:NO];

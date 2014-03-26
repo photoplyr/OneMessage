@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Messager.h"
 #import "Friends.h"
+#import "Me.h"
 
 #import "MMDrawerController.h"
 #import "MMDrawerVisualState.h"
@@ -28,6 +29,8 @@
 
 #define DATA_FILE @"ol_data.plist"
 
+#define  MAX_ENTRIES_LOADED 100
+
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 
@@ -42,12 +45,16 @@
 @property (assign) MMDrawerController * drawerController;
 @property (copy) NSString *deviceUuid;
 @property BOOL locked;
-@property (copy) NSString *tokensource;
-@property (copy) NSString *tokentarget;
 
-@property (copy) NSData *publickey;
-@property (copy) NSData *targetkey;
+//@property (copy) NSString *tokensource;
+@property (copy) NSString *tokentarget;
 @property (copy) NSData *symkey;
+//
+//@property (copy) NSData *publickeysource;
+//@property (copy) NSData *publickeytarget;
+//
+//@property (copy) NSData *symkeysource;
+//@property (copy) NSData *symkeytarget;
 
 -(void) closeDrawer;
 
@@ -56,6 +63,9 @@
 
 -(NSArray *) getMessages;
 -(void) addMessage:(NSString *) message from:(NSString *)siod to:(NSString *)toid forDate:(NSDate *) date;
--(void) addFriend:(NSString *) name withToken:(NSString *) token withKey:(NSData *) key withBadge:(int) badge;
+
+-(void) addFriend:(NSString *) name withToken:(NSString *) token withSymKey:(NSData *) symkey  withPubKey:(NSData *)pubkey withBadge:(int) badge;
 -(NSArray *) getFriends;
+-(Friends *) getFriend:(NSString *) friendToken;
+-(Me *) getMe;
 @end
