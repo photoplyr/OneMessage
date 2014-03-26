@@ -83,14 +83,14 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.sender = [defaults stringForKey:APPNAME];
     
+    Me *me = [appdelegate getMe];
     
     if (appdelegate.tokentarget == nil)
     {
-        Me *me = [appdelegate getMe];
         appdelegate.tokentarget = me.lastchattoken;
     }
     
-    if (self.sender == nil)
+    if (me.name == nil)
     {
         [self presentChatNameDialog];
     }
@@ -581,6 +581,7 @@
         //Save Data to Parse
         me.name = self.sender;
         [appdelegate saveContext];
+        
         
         // going for the parsing
         PFObject *newMessage = [PFObject objectWithClassName:@"Users"];

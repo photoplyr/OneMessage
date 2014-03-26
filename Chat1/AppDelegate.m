@@ -80,6 +80,13 @@
 
     me.token = [NSString stringWithFormat:@"ID_%@",did];
     
+    //  The local storage was wiped
+    if (me.publickey == nil)
+    {
+        [[SecKeyWrapper sharedWrapper] deleteSymmetricKey];
+        [[SecKeyWrapper sharedWrapper] deleteAsymmetricKeys];
+    }
+    
     // Genereate the Symmetric Key used to wrapp the package
     if (	![[SecKeyWrapper sharedWrapper] getPublicKeyRef]		||
         ![[SecKeyWrapper sharedWrapper] getPrivateKeyRef]		||
@@ -96,16 +103,49 @@
         
         me.symkey = symkey;
         me.publickey = publickey;
-          [self saveContext];
+        
+        [self saveContext];
         NSLog(@"Build Key pair");
     }
     
+    
     [self saveContext];
+    
+    [self loadServerData:me.token];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:CHANNELREADY object:[NSString stringWithFormat:@"ID_%@",did]];
     
     NSLog(@"Push Registered : %@",did);
 }
 
+-(void) loadServerData:(NSString *) stoken
+{
+    // Try and load data from cloud
+     Me *me = [self getMe];
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"tokensource = %@",stoken];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"Users" predicate:predicate];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+     {
+         if (!error)
+         {
+             for(id convers in objects)
+             {
+                 me.publickey = [convers objectForKey:@"publickeysource"];
+                 me.symkey = [convers objectForKey:@"symkeysource"];
+                 me.name = [convers objectForKey:@"userName"];
+                 [self saveContext];
+                 break;
+             }
+         }
+     }];
+    
+    
+    //
+
+}
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))handler {
     // Create empty photo object
@@ -255,6 +295,12 @@
             friend.badge = [NSNumber numberWithInt:0];
         else
             friend.badge = [NSNumber numberWithInt:badgeCount];
+        
+        if (symkey != nil)
+            friend.symkey = symkey;
+        
+        if (pubkey != nil)
+            friend.publickey = pubkey;
         
         [self saveContext];
     }
