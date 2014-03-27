@@ -11,7 +11,6 @@
 		4A15D4C518E3684000821466 /* Me.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4C418E3684000821466 /* Me.m */; };
 		4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */; };
 		4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */; };
-		4A3F9CA718DCE0A50023C00C /* CryptoClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9CA118DCE0A50023C00C /* CryptoClient.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4A887D6D18DC9DC300CC607E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A887D6B18DC9DC300CC607E /* libcrypto.a */; };
 		4A887D6E18DC9DC300CC607E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A887D6C18DC9DC300CC607E /* libssl.a */; };
@@ -95,8 +94,6 @@
 		4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQSystemSoundPlayer.m; sourceTree = "<group>"; };
 		4A3F9C8C18DCD6E40023C00C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
 		4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
-		4A3F9CA018DCE0A50023C00C /* CryptoClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoClient.h; sourceTree = "<group>"; };
-		4A3F9CA118DCE0A50023C00C /* CryptoClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptoClient.m; sourceTree = "<group>"; };
 		4A3F9CA218DCE0A50023C00C /* CryptoCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCommon.h; sourceTree = "<group>"; };
 		4A3F9CA518DCE0A50023C00C /* SecKeyWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecKeyWrapper.h; sourceTree = "<group>"; };
 		4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecKeyWrapper.m; sourceTree = "<group>"; };
@@ -249,8 +246,6 @@
 		4A3F9C8F18DCDF100023C00C /* IOSCrypt */ = {
 			isa = PBXGroup;
 			children = (
-				4A3F9CA018DCE0A50023C00C /* CryptoClient.h */,
-				4A3F9CA118DCE0A50023C00C /* CryptoClient.m */,
 				4A3F9CA218DCE0A50023C00C /* CryptoCommon.h */,
 				4A3F9CA518DCE0A50023C00C /* SecKeyWrapper.h */,
 				4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */,
@@ -639,7 +634,6 @@
 				4AAC54FC18DA2B2500AD6090 /* UIViewController+MMDrawerController.m in Sources */,
 				4A887D7A18DCA24D00CC607E /* NuRSAKey.m in Sources */,
 				4AAC54FA18DA2B2500AD6090 /* MMDrawerController.m in Sources */,
-				4A3F9CA718DCE0A50023C00C /* CryptoClient.m in Sources */,
 				4AAC54FE18DA2B2500AD6090 /* MMDrawerVisualState.m in Sources */,
 				4ACC3C0A18D7A4520041AC99 /* JSDismissiveTextView.m in Sources */,
 				4ACC3C0B18D7A4520041AC99 /* JSMessage.m in Sources */,

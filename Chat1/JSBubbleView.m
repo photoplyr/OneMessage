@@ -83,7 +83,8 @@
         [self bringSubviewToFront:textView];
         _textView = textView;
         
-        if ([_textView respondsToSelector:@selector(textContainerInset)]) {
+        if ([_textView respondsToSelector:@selector(textContainerInset)])
+        {
             _textView.textContainerInset = UIEdgeInsetsMake(8.0f, 4.0f, 2.0f, 4.0f);
         }
         
@@ -140,10 +141,12 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-    if (object == self.textView) {
+    if (object == self.textView)
+    {
         if ([keyPath isEqualToString:@"text"]
            || [keyPath isEqualToString:@"font"]
-           || [keyPath isEqualToString:@"textColor"]) {
+           || [keyPath isEqualToString:@"textColor"])
+        {
             [self setNeedsLayout];
         }
     }
@@ -161,11 +164,13 @@
 
 - (UIFont *)font
 {
-    if (_font == nil) {
+    if (_font == nil)
+    {
         _font = [[[self class] appearance] font];
     }
     
-    if (_font != nil) {
+    if (_font != nil)
+    {
         return _font;
     }
     
@@ -194,7 +199,8 @@
     
     CGFloat textX = self.bubbleImageView.frame.origin.x;
     
-    if (self.type == JSBubbleMessageTypeIncoming) {
+    if (self.type == JSBubbleMessageTypeIncoming)
+    {
         textX += (self.bubbleImageView.image.capInsets.left / 2.0f);
     }
     
@@ -217,7 +223,8 @@
     
     CGSize stringSize;
     
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_0) {
+    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_0)
+    {
         CGRect stringRect = [txt boundingRectWithSize:CGSizeMake(maxWidth, maxHeight)
                                               options:NSStringDrawingUsesLineFragmentOrigin
                                            attributes:@{ NSFontAttributeName : [[JSBubbleView appearance] font] }
@@ -225,7 +232,8 @@
         
         stringSize = CGRectIntegral(stringRect).size;
     }
-    else {
+    else
+    {
         stringSize = [txt sizeWithFont:[[JSBubbleView appearance] font]
                      constrainedToSize:CGSizeMake(maxWidth, maxHeight)];
     }

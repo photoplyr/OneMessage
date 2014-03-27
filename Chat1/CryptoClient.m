@@ -90,7 +90,7 @@
 					NSData * publicKey = [[SecKeyWrapper sharedWrapper] getPublicKeyBits];
 					retLen = [self sendData:publicKey];
 					
-					LOGGING_FACILITY1( retLen == [publicKey length], @"Attempt to send public key failed, only sent %d bytes.", retLen );
+					LOGGING_FACILITY1( retLen == [publicKey length], @"Attempt to send public key failed, only sent %d bytes.", (int)retLen );
 					
 					[self.ostr close];
 				}
