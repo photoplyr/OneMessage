@@ -17,6 +17,7 @@
 		4A15D4D918E4AD8E00821466 /* UserInfoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4D618E4AD8E00821466 /* UserInfoParser.m */; };
 		4A15D4DE18E4ADBB00821466 /* NSData+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4DA18E4ADBB00821466 /* NSData+Additions.m */; };
 		4A15D4DF18E4ADBB00821466 /* NSDictionary+UrlEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4DD18E4ADBB00821466 /* NSDictionary+UrlEncoding.m */; };
+		4A15D4E218E4B3A400821466 /* CoreDataAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4E118E4B3A400821466 /* CoreDataAccess.m */; };
 		4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */; };
 		4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */; };
 		4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -115,6 +116,8 @@
 		4A15D4DB18E4ADBB00821466 /* NSData+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Additions.h"; sourceTree = "<group>"; };
 		4A15D4DC18E4ADBB00821466 /* NSDictionary+UrlEncoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+UrlEncoding.h"; sourceTree = "<group>"; };
 		4A15D4DD18E4ADBB00821466 /* NSDictionary+UrlEncoding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+UrlEncoding.m"; sourceTree = "<group>"; };
+		4A15D4E018E4B3A400821466 /* CoreDataAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataAccess.h; sourceTree = "<group>"; };
+		4A15D4E118E4B3A400821466 /* CoreDataAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataAccess.m; sourceTree = "<group>"; };
 		4A3F9C8918DCD0C10023C00C /* JSQSystemSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQSystemSoundPlayer.h; sourceTree = "<group>"; };
 		4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQSystemSoundPlayer.m; sourceTree = "<group>"; };
 		4A3F9C8C18DCD6E40023C00C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -395,6 +398,8 @@
 				4ACC3BEA18D7A4450041AC99 /* JSMessage */,
 				4ACC3BBD18D7A43F0041AC99 /* AppDelegate.h */,
 				4ACC3BBE18D7A43F0041AC99 /* AppDelegate.m */,
+				4A15D4E018E4B3A400821466 /* CoreDataAccess.h */,
+				4A15D4E118E4B3A400821466 /* CoreDataAccess.m */,
 				4ACC3BC018D7A43F0041AC99 /* Main.storyboard */,
 				4ACD7EB818DA31CB002AD0A1 /* WebViewController.h */,
 				4ACD7EB918DA31CB002AD0A1 /* WebViewController.m */,
@@ -663,6 +668,7 @@
 				4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */,
 				4ACC3C1218D7A4520041AC99 /* JSBubbleImageViewFactory.m in Sources */,
 				4A15D4D718E4AD8E00821466 /* ErrorParser.m in Sources */,
+				4A15D4E218E4B3A400821466 /* CoreDataAccess.m in Sources */,
 				4ACC3C0918D7A4520041AC99 /* JSBubbleView.m in Sources */,
 				4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */,
 				4ACC3C1418D7A4520041AC99 /* UIColor+JSMessagesView.m in Sources */,

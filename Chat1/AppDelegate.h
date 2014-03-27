@@ -15,6 +15,8 @@
 #import "MMDrawerVisualState.h"
 #import "MMExampleDrawerVisualStateManager.h"
 
+#import "CoreDataAccess.h"
+
 #import "SecKeyWrapper.h"
 #import "CryptoCommon.h"
 
