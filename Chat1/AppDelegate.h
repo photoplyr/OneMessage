@@ -31,6 +31,14 @@
 
 #define  MAX_ENTRIES_LOADED 100
 
+#define GET_INFO_COMPLETE @"GET_INFO_COMPLETE"
+#define API_PROTOCOL @"https://"
+#define API_DOMAIN @"app.onelogin.com/mobile/"
+#define API_VERSION  @"v1"
+#define WEBAGENTIPHONE @"Mozilla/5.0 (iPhone; U; CPU iPhone OS 7_1 like Mac OS X; en-us) AppleWebKit/531.21.20 (KHTML, like Gecko) Mobile/7B298g"
+#define WEBAGENTIPAD @"Mozilla/5.0(iPad; U; CPU iPhone OS 7_1 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10"
+
+
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 

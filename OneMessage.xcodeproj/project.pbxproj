@@ -9,6 +9,14 @@
 /* Begin PBXBuildFile section */
 		4A00D5A718E2471200051869 /* Friends.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A00D5A618E2471200051869 /* Friends.m */; };
 		4A15D4C518E3684000821466 /* Me.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4C418E3684000821466 /* Me.m */; };
+		4A15D4CB18E4AD5900821466 /* GetInfoService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4C818E4AD5900821466 /* GetInfoService.m */; };
+		4A15D4CC18E4AD5900821466 /* WebService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4CA18E4AD5900821466 /* WebService.m */; };
+		4A15D4D018E4AD7800821466 /* Command.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4CF18E4AD7800821466 /* Command.m */; };
+		4A15D4D718E4AD8E00821466 /* ErrorParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4D218E4AD8E00821466 /* ErrorParser.m */; };
+		4A15D4D818E4AD8E00821466 /* XMLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4D418E4AD8E00821466 /* XMLParser.m */; };
+		4A15D4D918E4AD8E00821466 /* UserInfoParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4D618E4AD8E00821466 /* UserInfoParser.m */; };
+		4A15D4DE18E4ADBB00821466 /* NSData+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4DA18E4ADBB00821466 /* NSData+Additions.m */; };
+		4A15D4DF18E4ADBB00821466 /* NSDictionary+UrlEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4DD18E4ADBB00821466 /* NSDictionary+UrlEncoding.m */; };
 		4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */; };
 		4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */; };
 		4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -90,6 +98,23 @@
 		4A00D5A618E2471200051869 /* Friends.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Friends.m; sourceTree = "<group>"; };
 		4A15D4C318E3684000821466 /* Me.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Me.h; sourceTree = "<group>"; };
 		4A15D4C418E3684000821466 /* Me.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Me.m; sourceTree = "<group>"; };
+		4A15D4C718E4AD5900821466 /* GetInfoService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetInfoService.h; sourceTree = "<group>"; };
+		4A15D4C818E4AD5900821466 /* GetInfoService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetInfoService.m; sourceTree = "<group>"; };
+		4A15D4C918E4AD5900821466 /* WebService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebService.h; sourceTree = "<group>"; };
+		4A15D4CA18E4AD5900821466 /* WebService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebService.m; sourceTree = "<group>"; };
+		4A15D4CD18E4AD6D00821466 /* WebServiceDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebServiceDelegate.h; sourceTree = "<group>"; };
+		4A15D4CE18E4AD7800821466 /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
+		4A15D4CF18E4AD7800821466 /* Command.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Command.m; sourceTree = "<group>"; };
+		4A15D4D118E4AD8E00821466 /* ErrorParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorParser.h; sourceTree = "<group>"; };
+		4A15D4D218E4AD8E00821466 /* ErrorParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorParser.m; sourceTree = "<group>"; };
+		4A15D4D318E4AD8E00821466 /* XMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLParser.h; sourceTree = "<group>"; };
+		4A15D4D418E4AD8E00821466 /* XMLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLParser.m; sourceTree = "<group>"; };
+		4A15D4D518E4AD8E00821466 /* UserInfoParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfoParser.h; sourceTree = "<group>"; };
+		4A15D4D618E4AD8E00821466 /* UserInfoParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoParser.m; sourceTree = "<group>"; };
+		4A15D4DA18E4ADBB00821466 /* NSData+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Additions.m"; sourceTree = "<group>"; };
+		4A15D4DB18E4ADBB00821466 /* NSData+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Additions.h"; sourceTree = "<group>"; };
+		4A15D4DC18E4ADBB00821466 /* NSDictionary+UrlEncoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+UrlEncoding.h"; sourceTree = "<group>"; };
+		4A15D4DD18E4ADBB00821466 /* NSDictionary+UrlEncoding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+UrlEncoding.m"; sourceTree = "<group>"; };
 		4A3F9C8918DCD0C10023C00C /* JSQSystemSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQSystemSoundPlayer.h; sourceTree = "<group>"; };
 		4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQSystemSoundPlayer.m; sourceTree = "<group>"; };
 		4A3F9C8C18DCD6E40023C00C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -243,6 +268,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4A15D4C618E4AD4D00821466 /* PortalUtil */ = {
+			isa = PBXGroup;
+			children = (
+				4A15D4DA18E4ADBB00821466 /* NSData+Additions.m */,
+				4A15D4DB18E4ADBB00821466 /* NSData+Additions.h */,
+				4A15D4DC18E4ADBB00821466 /* NSDictionary+UrlEncoding.h */,
+				4A15D4DD18E4ADBB00821466 /* NSDictionary+UrlEncoding.m */,
+				4A15D4D118E4AD8E00821466 /* ErrorParser.h */,
+				4A15D4D218E4AD8E00821466 /* ErrorParser.m */,
+				4A15D4D318E4AD8E00821466 /* XMLParser.h */,
+				4A15D4D418E4AD8E00821466 /* XMLParser.m */,
+				4A15D4D518E4AD8E00821466 /* UserInfoParser.h */,
+				4A15D4D618E4AD8E00821466 /* UserInfoParser.m */,
+				4A15D4CE18E4AD7800821466 /* Command.h */,
+				4A15D4CF18E4AD7800821466 /* Command.m */,
+				4A15D4CD18E4AD6D00821466 /* WebServiceDelegate.h */,
+				4A15D4C718E4AD5900821466 /* GetInfoService.h */,
+				4A15D4C818E4AD5900821466 /* GetInfoService.m */,
+				4A15D4C918E4AD5900821466 /* WebService.h */,
+				4A15D4CA18E4AD5900821466 /* WebService.m */,
+			);
+			name = PortalUtil;
+			sourceTree = "<group>";
+		};
 		4A3F9C8F18DCDF100023C00C /* IOSCrypt */ = {
 			isa = PBXGroup;
 			children = (
@@ -334,6 +383,7 @@
 		4ACC3BB418D7A43F0041AC99 /* OneMessage */ = {
 			isa = PBXGroup;
 			children = (
+				4A15D4C618E4AD4D00821466 /* PortalUtil */,
 				4A3F9C8F18DCDF100023C00C /* IOSCrypt */,
 				4A887D7118DCA24200CC607E /* CRYPTO */,
 				4ACD7ED918DB5170002AD0A1 /* Message */,
@@ -603,6 +653,7 @@
 				4A00D5A718E2471200051869 /* Friends.m in Sources */,
 				4ACC3C0E18D7A4520041AC99 /* JSMessagesViewController.m in Sources */,
 				4AAC54FD18DA2B2500AD6090 /* MMDrawerBarButtonItem.m in Sources */,
+				4A15D4CC18E4AD5900821466 /* WebService.m in Sources */,
 				4ACC3BBF18D7A43F0041AC99 /* AppDelegate.m in Sources */,
 				4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */,
 				4ACD7EBE18DA3218002AD0A1 /* UserProxy.m in Sources */,
@@ -611,30 +662,37 @@
 				4AAC54EB18D8EA5D00AD6090 /* Messager.m in Sources */,
 				4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */,
 				4ACC3C1218D7A4520041AC99 /* JSBubbleImageViewFactory.m in Sources */,
+				4A15D4D718E4AD8E00821466 /* ErrorParser.m in Sources */,
 				4ACC3C0918D7A4520041AC99 /* JSBubbleView.m in Sources */,
 				4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */,
 				4ACC3C1418D7A4520041AC99 /* UIColor+JSMessagesView.m in Sources */,
 				4ACD7ECD18DA3325002AD0A1 /* PersistentDataProxy.m in Sources */,
 				4ACC3BBB18D7A43F0041AC99 /* main.m in Sources */,
 				4A887D7818DCA24D00CC607E /* NuBinaryEncoding.m in Sources */,
+				4A15D4D018E4AD7800821466 /* Command.m in Sources */,
 				4AAC54FB18DA2B2500AD6090 /* MMDrawerController+Storyboard.m in Sources */,
 				4ACC3C1018D7A4520041AC99 /* JSMessageTextView.m in Sources */,
 				4A887D7918DCA24D00CC607E /* NuCommonCrypto.m in Sources */,
 				4A15D4C518E3684000821466 /* Me.m in Sources */,
 				4ACD7ED118DA335F002AD0A1 /* Util.m in Sources */,
 				4ACD7EB718DA30DC002AD0A1 /* FriendsViewController.m in Sources */,
+				4A15D4D918E4AD8E00821466 /* UserInfoParser.m in Sources */,
 				4ACC3C0D18D7A4520041AC99 /* JSMessageSoundEffect.m in Sources */,
 				4ACC3C1F18D8A8B90041AC99 /* NavigationViewController.m in Sources */,
+				4A15D4CB18E4AD5900821466 /* GetInfoService.m in Sources */,
 				4ACD7ED518DA33B0002AD0A1 /* SFHFKeychainUtils.m in Sources */,
 				4ACD7EBA18DA31CB002AD0A1 /* WebViewController.m in Sources */,
 				4ACC3C0F18D7A4520041AC99 /* JSMessageTableView.m in Sources */,
+				4A15D4DE18E4ADBB00821466 /* NSData+Additions.m in Sources */,
 				4ACC3C0818D7A4520041AC99 /* JSBubbleMessageCell.m in Sources */,
 				4ACC3C2E18D8BB860041AC99 /* Chat1.xcdatamodeld in Sources */,
 				4ACC3C1518D7A4520041AC99 /* UIImage+JSMessagesView.m in Sources */,
 				4AAC54FC18DA2B2500AD6090 /* UIViewController+MMDrawerController.m in Sources */,
 				4A887D7A18DCA24D00CC607E /* NuRSAKey.m in Sources */,
+				4A15D4DF18E4ADBB00821466 /* NSDictionary+UrlEncoding.m in Sources */,
 				4AAC54FA18DA2B2500AD6090 /* MMDrawerController.m in Sources */,
 				4AAC54FE18DA2B2500AD6090 /* MMDrawerVisualState.m in Sources */,
+				4A15D4D818E4AD8E00821466 /* XMLParser.m in Sources */,
 				4ACC3C0A18D7A4520041AC99 /* JSDismissiveTextView.m in Sources */,
 				4ACC3C0B18D7A4520041AC99 /* JSMessage.m in Sources */,
 				4ACC3C0C18D7A4520041AC99 /* JSMessageInputView.m in Sources */,

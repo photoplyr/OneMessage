@@ -12,7 +12,7 @@
 #import "Messager.h"
 #import "NuRSAKey.h"
 
-
+#import "WebViewController.h"
 @interface ChatViewController ()
 {
     AppDelegate *appdelegate;
@@ -83,6 +83,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.sender = [defaults stringForKey:APPNAME];
     
+    
     Me *me = [appdelegate getMe];
     
     if (appdelegate.tokentarget == nil)
@@ -90,10 +91,11 @@
         appdelegate.tokentarget = me.lastchattoken;
     }
     
-    if (me.name == nil)
-    {
-        [self presentChatNameDialog];
-    }
+    // ADDED OL Web login page
+    //    if (me.name == nil)
+    //    {
+    //        [self presentChatNameDialog];
+    //    }
     
     [self loadMessages:nil];
     [self scrollToBottomAnimated:NO];
@@ -259,21 +261,17 @@
 
 #pragma mark - Messages view delegate: REQUIRED
 - (NSString *)decryptMessage:(NSData *)blob {
-    NSString *test = [self _decryptMessage:blob];
+    NSString *data = [self _decryptMessage:blob];
     
-    return  test;
-    
-//    return [[NSString alloc] initWithData:blob encoding:NSUTF8StringEncoding];
+    return  data;
 }
 
 
 
 -(NSData *) encryptMessage:(NSString *) blog
 {
-    NSData *test = [self _encryptMessage:blog];
-     return  test;
-    
-//    return  [blog dataUsingEncoding: NSUTF8StringEncoding];
+    NSData *data = [self _encryptMessage:blog];
+    return  data;
 }
 
 - (NSString *)_decryptMessage:(NSData *)blob {
@@ -285,10 +283,8 @@
     SecKeyRef publicKeyRef = NULL;
     NSData * plainText = nil;
     
-//  Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
     Me *me = [appdelegate getMe];
     
-    // THIS USES THE PUBLIC KEY!!!!!
     message = [NSPropertyListSerialization propertyListFromData:blob mutabilityOption:NSPropertyListMutableContainers format:nil errorDescription:&error];
     
     if (!error) {
@@ -314,7 +310,7 @@
         verified = [[SecKeyWrapper sharedWrapper] verifySignature:plainText
                                                         secKeyRef:publicKeyRef
                                                         signature:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kSigTag]]];
-    
+        
         [[SecKeyWrapper sharedWrapper] removePeerPublicKey:me.token];
         
         if (!verified)
@@ -353,7 +349,7 @@
     
     // Add the public key.
     [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] getPublicKeyBits]
-    forKey:[NSString stringWithUTF8String:(const char *)kPubTag]];
+                      forKey:[NSString stringWithUTF8String:(const char *)kPubTag]];
     
     // Add the signature to the message holder.
     [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] getSignatureBytes:plainText]
@@ -434,7 +430,6 @@
     
     text = @"";
     [self scrollToBottomAnimated:YES];
-    
 }
 
 - (JSBubbleMessageType)messageTypeForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -479,7 +474,6 @@
 //
 - (void)configureCell:(JSBubbleMessageCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
-    //if ([cell messageType] == JSBubbleMessageTypeOutgoing)
     {
         cell.bubbleView.textView.textColor = [UIColor whiteColor];
         
@@ -511,13 +505,6 @@
     cell.bubbleView.textView.dataDetectorTypes = UIDataDetectorTypeAll;
 #endif
 }
-
-//  *** Implement to use a custom send button
-//
-//  The button's frame is set automatically for you
-//
-//  - (UIButton *)sendButtonForInputView
-//
 
 //  *** Implement to prevent auto-scrolling when message is added
 //
@@ -581,7 +568,6 @@
         //Save Data to Parse
         me.name = self.sender;
         [appdelegate saveContext];
-        
         
         // going for the parsing
         PFObject *newMessage = [PFObject objectWithClassName:@"Users"];

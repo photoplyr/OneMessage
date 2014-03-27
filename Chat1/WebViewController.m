@@ -9,6 +9,8 @@
 #import "WebViewController.h"
 #import "AppDelegate.h"
 #import "ChatViewController.h"
+#import "GetInfoService.h"
+#import "Me.h"
 
 @interface WebViewController ()
 {
@@ -58,12 +60,9 @@
     [[PersistentDataProxy instance] loadLocalData];
     NSDictionary * data = [PersistentDataProxy instance].localData;
     
-    //https://new.onelogin.com/login/mobile/ok
-    
     if([[data objectForKey:@"sessionKey"] isEqualToString:@""] || [data count] == 0)
     {
         url = @"https://new.onelogin.com/mobile_sessions/new";
-        //url = @"https://app.onelogin.us/mobile_sessions/new?device=ipad";
         NSURLRequest * loginRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         [self.web loadRequest:loginRequest];
     }
@@ -89,13 +88,6 @@
     self.navigationItem.titleView = imageView;
 }
 
--(BOOL)passcodeExistsInKeychain
-{
-	return [SFHFKeychainUtils getPasswordForUsername: kKeychainPasscode
-									  andServiceName: kKeychainServiceName
-											   error: nil].length != 0;
-}
-
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
     NSString * token = [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById('token').getAttribute('data-token');"];
@@ -104,15 +96,44 @@
     
     if ([token length] > 0)
     {
-//        appdelegate.tokensource = token;
-//        
-//        [UserProxy instance].sessionKey = token;
-//        [[PersistentDataProxy instance] saveLocalData];
         
-        ChatViewController *v = [self.storyboard instantiateViewControllerWithIdentifier:@"chatwindow"];
-        [self.navigationController pushViewController:v animated:NO];
+        [UserProxy instance].sessionKey = token;
+        [[PersistentDataProxy instance] saveLocalData];
+        
+        GetInfoService * infoService = [[GetInfoService alloc] initWithParams:nil];
+        infoService.delegate = self;
+        [infoService execute];
     }
 }
+
+
+-(void) webServiceDidFailWithError:(NSString *)error
+{
+    NSLog(@"!!!!!!!! ERROR TRYING TO GET USERS NAME !!!!!!!!");
+}
+
+- (void)webServiceDidFinishWithSuccess:(NSString *)data
+{
+    
+    Me *me = [appdelegate getMe];
+    me.name = [UserProxy instance].userName ;
+    [appdelegate saveContext];
+    
+    [[NSUserDefaults standardUserDefaults] setObject:me.name forKey:APPNAME];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    // going for the parsing
+    PFObject *newMessage = [PFObject objectWithClassName:@"Users"];
+    [newMessage setObject:me.token forKey:@"tokensource"];
+    [newMessage setObject: me.publickey forKey:@"publickeysource"];
+    [newMessage setObject: me.symkey forKey:@"symkeysource"];
+    [newMessage setObject:me.name forKey:@"userName"];
+    [newMessage saveInBackground];
+
+    ChatViewController *v = [self.storyboard instantiateViewControllerWithIdentifier:@"chatwindow"];
+    [self.navigationController pushViewController:v animated:NO];
+}
+
 
 - (NSUInteger)supportedInterfaceOrientations
 {

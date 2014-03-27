@@ -9,12 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "UserProxy.h"
 #import "PersistentDataProxy.h"
+#import "WebServiceDelegate.h"
 
 static NSString *const kKeychainPasscode = @"oneLogin";
 static NSString *const kKeychainServiceName = @"oneMessager";
 
 
-@interface WebViewController : UIViewController
+@interface WebViewController : UIViewController <WebServiceDelegate>
 
 @property(weak,nonatomic) IBOutlet UIWebView *web;
 @property(weak,nonatomic) IBOutlet UILabel *peasewait;
