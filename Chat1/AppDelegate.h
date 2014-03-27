@@ -78,4 +78,8 @@
 -(NSArray *) getFriends;
 -(Friends *) getFriend:(NSString *) friendToken;
 -(Me *) getMe;
+
+
+-(void) unsubscribe:(NSString *) sid;
+-(void) subscribe:(NSString *) sid;
 @end

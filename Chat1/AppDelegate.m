@@ -113,9 +113,28 @@
     
     [self loadServerData:me.token];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:CHANNELREADY object:[NSString stringWithFormat:@"ID_%@",did]];
+    
+    [self subscribe:[NSString stringWithFormat:@"ID_%@",did]];
+    NSLog(@"Channel Ready %@",[NSString stringWithFormat:@"ID_%@",did]);
+    
+    //[[NSNotificationCenter defaultCenter] postNotificationName:CHANNELREADY object:[NSString stringWithFormat:@"ID_%@",did]];
     
     NSLog(@"Push Registered : %@",did);
+}
+
+-(void) unsubscribe:(NSString *) sid
+{
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation removeObject:sid forKey:@"channels"];
+    [currentInstallation saveInBackground];
+}
+
+-(void) subscribe:(NSString *) sid
+{
+    // When users indicate they are Giants fans, we subscribe them to that channel.
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    [currentInstallation addUniqueObject:sid forKey:@"channels"];
+    [currentInstallation saveInBackground];
 }
 
 -(void) loadServerData:(NSString *) stoken

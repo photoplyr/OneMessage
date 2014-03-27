@@ -104,7 +104,10 @@
     
     Friends *friend = [self.friends objectAtIndex:indexPath.row];
     cell.textLabel.text = friend.name;
+    if ([friend.badge intValue] > 0)
     cell.detailTextLabel.text = [NSString stringWithFormat:@"Messages %@", [friend.badge stringValue]];
+    else
+         cell.detailTextLabel.text = @"";
     cell.imageView.image = [JSAvatarImageFactory classicAvatarImageNamed:@"profile" croppedToCircle:YES];
     return cell;
 }

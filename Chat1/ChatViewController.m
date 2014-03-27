@@ -20,6 +20,7 @@
     NSString *className;
     BOOL isShowingAlertView;
     BOOL isFirstShown;
+    Me *me;
 }
 
 @end
@@ -55,28 +56,30 @@
 - (void)channelReady:(NSNotification *)note
 {
     NSString *o = (NSString *)[note object];
-    [self subscribe:o];
+    [appdelegate subscribe:o];
     NSLog(@"Channel Ready %@",o);
 }
 
--(void) unsubscribe:(NSString *) sid
-{
-    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    [currentInstallation removeObject:sid forKey:@"channels"];
-    [currentInstallation saveInBackground];
-}
-
--(void) subscribe:(NSString *) sid
-{
-    // When users indicate they are Giants fans, we subscribe them to that channel.
-    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    [currentInstallation addUniqueObject:sid forKey:@"channels"];
-    [currentInstallation saveInBackground];
-}
+//-(void) unsubscribe:(NSString *) sid
+//{
+//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+//    [currentInstallation removeObject:sid forKey:@"channels"];
+//    [currentInstallation saveInBackground];
+//}
+//
+//-(void) subscribe:(NSString *) sid
+//{
+//    // When users indicate they are Giants fans, we subscribe them to that channel.
+//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+//    [currentInstallation addUniqueObject:sid forKey:@"channels"];
+//    [currentInstallation saveInBackground];
+//}
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    me = [appdelegate getMe];
     
     self.messageInputView.textView.keyboardAppearance = UIKeyboardAppearanceDark;
     
@@ -84,9 +87,7 @@
     self.sender = [defaults stringForKey:APPNAME];
     
     
-    Me *me = [appdelegate getMe];
-    
-    if (appdelegate.tokentarget == nil)
+   if (appdelegate.tokentarget == nil)
     {
         appdelegate.tokentarget = me.lastchattoken;
     }
@@ -121,8 +122,6 @@
     
     Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
     self.title = [friend.name uppercaseString];
-    
-    Me *me = [appdelegate getMe];
     
     if (me.token == nil)
         return;
@@ -178,8 +177,6 @@
     self.title = [friend.name uppercaseString];
     
     className = APPNAME;
-    
-    Me *me = [appdelegate getMe];
     
     if (me.token == nil)
         return;
@@ -283,8 +280,6 @@
     SecKeyRef publicKeyRef = NULL;
     NSData * plainText = nil;
     
-    Me *me = [appdelegate getMe];
-    
     message = [NSPropertyListSerialization propertyListFromData:blob mutabilityOption:NSPropertyListMutableContainers format:nil errorDescription:&error];
     
     if (!error) {
@@ -376,7 +371,6 @@
 - (void)didSendText:(NSString *)text fromSender:(NSString *)sender onDate:(NSDate *)date
 {
     Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
-    Me *me = [appdelegate getMe];
     
     NSData * message = nil;
     
@@ -385,7 +379,7 @@
     if ([text length] < 1)
         return;
     
-    [self.messages addObject:[[JSMessage alloc] initWithText:text sender:sender date:date]];
+    [self.messages addObject:[[JSMessage alloc] initWithText:text sender:me.name date:date]];
     
     NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
     NSIndexPath *newPath = [NSIndexPath indexPathForRow:0 inSection:0];
@@ -401,7 +395,7 @@
     [newMessage setObject:text forKey:@"text"];
     [newMessage setObject:message forKey:@"cryptext"];
     
-    [newMessage setObject:sender forKey:@"userName"];
+    [newMessage setObject:me.name forKey:@"userName"];
     
     [newMessage setObject:me.token forKey:@"sourceToken"];
     [newMessage setObject:friend.token forKey:@"targetToken"];
@@ -413,7 +407,7 @@
     // Send a notification to all devices subscribed to the "Giants" channel.
     NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
                           [NSString stringWithFormat:
-                           @"Message from %@",sender],@"alert" ,
+                           @"Message from %@",me.name],@"alert" ,
                           @"Increment", @"badge",
                           sender, @"name",
                           me.token,@"tokensource",
@@ -436,7 +430,7 @@
 {
     JSMessage * message = [self.messages objectAtIndex:indexPath.row];
     
-    if ([message.sender isEqualToString:self.sender])
+    if ([message.sender isEqualToString:me.name])
         return  JSBubbleMessageTypeOutgoing;
     else
         return  JSBubbleMessageTypeIncoming;
@@ -445,9 +439,10 @@
 - (UIImageView *)bubbleImageViewWithType:(JSBubbleMessageType)type
                        forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
     JSMessage *message = [self.messages objectAtIndex:indexPath.row];
     
-    if ([self.sender isEqualToString:(NSString *)message.sender])
+    if ([me.name isEqualToString:(NSString *)message.sender])
         return [JSBubbleImageViewFactory bubbleImageViewForType:type color:[UIColor js_bubbleGreenColor]];
     else
         return [JSBubbleImageViewFactory bubbleImageViewForType:type color:[UIColor js_bubbleBlueColor]];
@@ -545,51 +540,51 @@
     isShowingAlertView = YES;
 }
 
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-    Me *me = [appdelegate getMe];
-    
-    if (buttonIndex != 0)
-    {
-        
-        if (me.token == nil)
-        {
-            NSLog(@"---------- ERROR NO SOURCE TOKEN --------------");
-            return;
-        }
-        
-        UITextField *textField = [alertView textFieldAtIndex:0];
-        NSLog(@"Plain text input: %@",textField.text);
-        self.sender = [textField.text capitalizedString ];
-        [[NSUserDefaults standardUserDefaults] setObject:self.sender forKey:APPNAME];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        isShowingAlertView = NO;
-        
-        //Save Data to Parse
-        me.name = self.sender;
-        [appdelegate saveContext];
-        
-        // going for the parsing
-        PFObject *newMessage = [PFObject objectWithClassName:@"Users"];
-        [newMessage setObject:me.token forKey:@"tokensource"];
-        [newMessage setObject: me.publickey forKey:@"publickeysource"];
-        [newMessage setObject: me.symkey forKey:@"symkeysource"];
-        [newMessage setObject:me.name forKey:@"userName"];
-        [newMessage saveInBackground];
-        
-    }
-    else if (isFirstShown)
-    {
-        UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Ooops"
-                              message:@"Something's gone wrong. To post in this room you must have a OneMessage name. Go to the options panel to define one"
-                              delegate:self
-                              cancelButtonTitle:nil
-                              otherButtonTitles:@"Dismiss", nil];
-        [alert show];
-        isFirstShown = NO;
-    }
-}
+//- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+//{
+//    Me *me = [appdelegate getMe];
+//    
+//    if (buttonIndex != 0)
+//    {
+//        
+//        if (me.token == nil)
+//        {
+//            NSLog(@"---------- ERROR NO SOURCE TOKEN --------------");
+//            return;
+//        }
+//        
+//        UITextField *textField = [alertView textFieldAtIndex:0];
+//        NSLog(@"Plain text input: %@",textField.text);
+//        self.sender = [textField.text capitalizedString ];
+//        [[NSUserDefaults standardUserDefaults] setObject:self.sender forKey:APPNAME];
+//        [[NSUserDefaults standardUserDefaults] synchronize];
+//        isShowingAlertView = NO;
+//        
+//        //Save Data to Parse
+//        me.name = self.sender;
+//        [appdelegate saveContext];
+//        
+//        // going for the parsing
+//        PFObject *newMessage = [PFObject objectWithClassName:@"Users"];
+//        [newMessage setObject:me.token forKey:@"tokensource"];
+//        [newMessage setObject: me.publickey forKey:@"publickeysource"];
+//        [newMessage setObject: me.symkey forKey:@"symkeysource"];
+//        [newMessage setObject:me.name forKey:@"userName"];
+//        [newMessage saveInBackground];
+//        
+//    }
+//    else if (isFirstShown)
+//    {
+//        UIAlertView *alert = [[UIAlertView alloc]
+//                              initWithTitle:@"Ooops"
+//                              message:@"Something's gone wrong. To post in this room you must have a OneMessage name. Go to the options panel to define one"
+//                              delegate:self
+//                              cancelButtonTitle:nil
+//                              otherButtonTitles:@"Dismiss", nil];
+//        [alert show];
+//        isFirstShown = NO;
+//    }
+//}
 
 
 @end
