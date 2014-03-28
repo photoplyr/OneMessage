@@ -2,7 +2,7 @@
 //  Friends.h
 //  OneMessage
 //
-//  Created by Troy Simon on 3/25/14.
+//  Created by Troy Simon on 3/28/14.
 //  Copyright (c) 2014 Troy Simon. All rights reserved.
 //
 
@@ -13,9 +13,10 @@
 @interface Friends : NSManagedObject
 
 @property (nonatomic, retain) NSNumber * badge;
-@property (nonatomic, retain) NSData * symkey;
 @property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) NSString * token;
 @property (nonatomic, retain) NSData * publickey;
+@property (nonatomic, retain) NSData * symkey;
+@property (nonatomic, retain) NSString * token;
+@property (nonatomic, retain) NSNumber * approved;
 
 @end

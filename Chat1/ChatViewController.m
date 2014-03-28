@@ -11,6 +11,7 @@
 #import "AppDelegate.h"
 #import "Messager.h"
 #import "NuRSAKey.h"
+#import "TWMessageBarManager.h"
 
 #import "WebViewController.h"
 @interface ChatViewController ()
@@ -354,6 +355,16 @@
 - (void)didSendText:(NSString *)text fromSender:(NSString *)sender onDate:(NSDate *)date
 {
     Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    
+    
+    if (![friend.approved boolValue])
+    {
+        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Message "
+                                                       description:@"Your are not approved to send a message to this friend"
+                                                              type:TWMessageBarMessageTypeError];
+        
+        return;
+    }
     
     NSData * message = nil;
     

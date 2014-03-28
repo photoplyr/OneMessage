@@ -126,16 +126,24 @@
                  if (([[data objectForKey:@"targetAck"] intValue] + [[data objectForKey:@"sourceAck"] intValue] ) == 2)
                  {
                      cell.request.text = @"";
+                     friend.approved = [NSNumber numberWithBool:YES];
+                     [appdelegate saveContext];
                  }
                  else
                  {   // If I send message show waiting message
                      cell.request.text = @"Waiting";
+                     friend.approved = [NSNumber numberWithBool:NO];
+                     [appdelegate saveContext];
                      
                      // If I am recipient of request I need to accept the request
                      if ([[data objectForKey:@"targetToken"] isEqualToString:me.token] )
                      {
                          if ([[data objectForKey:@"targetAck"] intValue] == 0)
+                         {
                              cell.request.text = @"Accept";
+                             friend.approved = [NSNumber numberWithBool:NO];
+                             [appdelegate saveContext];
+                         }
                      }
                  }
              }
@@ -143,6 +151,8 @@
              {
                  // Nothis is done so Invite
                  cell.request.text = @"Invite";
+                 friend.approved = [NSNumber numberWithBool:NO];
+                 [appdelegate saveContext];
              }
              
          }
@@ -173,97 +183,111 @@
     Me *me = [appdelegate getMe];
     BOOL __block ok = FALSE;
     
-    // 1. Make sure there is a mutual invitation
-    //    PFObject *data = [appdelegate isApprovedToChat:me withFriends:friend];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
+    if ([friend.approved boolValue])
+    {
+      [self loadMessageCenter:me andFriend:friend];
+    }
     
-    PFQuery *query = [PFQuery queryWithClassName:@"Invitation" predicate:predicate];
-    
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-     {
-         if (!error)
+    else
+    {
+        // 1. Make sure there is a mutual invitation
+        //    PFObject *data = [appdelegate isApprovedToChat:me withFriends:friend];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
+        
+        PFQuery *query = [PFQuery queryWithClassName:@"Invitation" predicate:predicate];
+        
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
          {
-             PFObject *data =  [query getFirstObject];
-             if (data != nil)
+             if (!error)
              {
-                 // If sending, then set my ACK value
-                 if ([[data objectForKey:@"sourceToken"] isEqualToString:me.token] )
+                 PFObject *data =  [query getFirstObject];
+                 if (data != nil)
                  {
-                     if ([[data objectForKey:@"sourceAck"] intValue] == 0)
+                     // If sending, then set my ACK value
+                     if ([[data objectForKey:@"sourceToken"] isEqualToString:me.token] )
                      {
-                         [data setObject:[NSNumber numberWithInt:1] forKey:@"sourceAck"];
+                         if ([[data objectForKey:@"sourceAck"] intValue] == 0)
+                         {
+                             [data setObject:[NSNumber numberWithInt:1] forKey:@"sourceAck"];
+                         }
+                         else
+                         {
+                             [tableView reloadData];
+                             
+                         }
                      }
                      else
                      {
-                         [tableView reloadData];
-                         return ;
+                         // If I receiving request then set my ACK value and push a notification
+                         if ([[data objectForKey:@"targetAck"] intValue] == 0)
+                         {
+                             [data setObject:[NSNumber numberWithInt:1] forKey:@"targetAck"];
+                             
+                             // Send a notification
+                             NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                   [NSString stringWithFormat:
+                                                    @"%@ has accepted your request",friend.name],@"alert" ,
+                                                   friend.name, @"name",
+                                                   @"1",@"ack",
+                                                   nil];
+                             
+                             [appdelegate sendPush:friend.token withData:data];
+                         }
                      }
-                 }
-                 else
-                 {
-                     // If I receiving request then set my ACK value and push a notification
-                     if ([[data objectForKey:@"targetAck"] intValue] == 0)
+                     
+                     // No update the server
+                     if ([data isDirty])
+                         [data saveInBackground];
+                     
+                     if (([[data objectForKey:@"targetAck"] intValue] + [[data objectForKey:@"sourceAck"] intValue] ) == 2)
                      {
-                         [data setObject:[NSNumber numberWithInt:1] forKey:@"targetAck"];
-                         
-                         // Send a notification
-                         NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
-                                               [NSString stringWithFormat:
-                                                @"%@ has accepted your request",friend.name],@"alert" ,
-                                               friend.name, @"name",
-                                               @"1",@"ack",
-                                               nil];
-                         
-                         [appdelegate sendPush:friend.token withData:data];
+                         friend.approved = [NSNumber numberWithBool:YES];
+                         [appdelegate saveContext];
+                         ok = TRUE;
                      }
-                 }
-                 
-                 // No update the server
-                 if ([data isDirty])
-                     [data saveInBackground];
-                 
-                 if (([[data objectForKey:@"targetAck"] intValue] + [[data objectForKey:@"sourceAck"] intValue] ) == 2)
-                 {
-                     ok = TRUE;
-                 }
-                 else
-                 {
-                     ok = FALSE;
+                     else
+                     {
+                         friend.approved = [NSNumber numberWithBool:NO];
+                         ok = FALSE;
+                     }
                  }
              }
-         }
-         else
-         {
-             ok = FALSE;
-             // Log details of the failure
-             NSLog(@"Error: %@ %@", error, [error userInfo]);
-         }
-         
-         if (ok)
-         {
-             me.lastchattoken = friend.token;
+             else
+             {
+                 ok = FALSE;
+                 // Log details of the failure
+                 NSLog(@"Error: %@ %@", error, [error userInfo]);
+             }
              
-             appdelegate.tokentarget = friend.token;
+             if (ok)
+             {
+                 [self loadMessageCenter:me andFriend:friend];
+              }
+             else
+             {
+                 // Send the request to your friend
+                 [appdelegate makeChatRequest:me withFriends:friend];
+                 
+                 [tableView reloadData];
+             }
              
-             [appdelegate closeDrawer];
-             
-             friend.badge = [NSNumber numberWithInt:-1];
-             [appdelegate saveContext];
-             
-             [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:friend.name];
-         }
-         else
-         {
-             // Send the request to your friend
-             [appdelegate makeChatRequest:me withFriends:friend];
-             
-             [tableView reloadData];
-         }
-         
-     }];
+         }];
+    }
 }
 
+-(void) loadMessageCenter:(Me *) me andFriend:(Friends *) friend
+{
+             me.lastchattoken = friend.token;
 
+             appdelegate.tokentarget = friend.token;
+
+             [appdelegate closeDrawer];
+
+             friend.badge = [NSNumber numberWithInt:-1];
+             [appdelegate saveContext];
+
+             [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:friend.name];
+}
 
 - (void)didReceiveMemoryWarning
 {

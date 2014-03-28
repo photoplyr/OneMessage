@@ -361,7 +361,7 @@
         Friends *friend = [NSEntityDescription
                            insertNewObjectForEntityForName:@"Friends"
                            inManagedObjectContext:self.managedObjectContext];
-        
+        friend.approved = [NSNumber numberWithBool:YES];
         friend.name = name;
         friend.token = token;
         friend.symkey = symkey;
@@ -385,6 +385,8 @@
         
         if (pubkey != nil)
             friend.publickey = pubkey;
+        
+        friend.approved = [NSNumber numberWithBool:YES];
         
         [self saveContext];
     }
