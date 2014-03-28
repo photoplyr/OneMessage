@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 #import "Friends.h"
+#import "FriendTableViewCell.h"
 
 @interface FriendsViewController : UITableViewController
 

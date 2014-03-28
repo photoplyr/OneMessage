@@ -8,6 +8,7 @@
 
 #import "FriendsViewController.h"
 #import "JSAvatarImageFactory.h"
+#import "InviteViewController.h"
 
 @interface FriendsViewController ()
 {
@@ -48,6 +49,10 @@
     [self loadFriends];
 }
 
+-(IBAction)invite:(id)sender
+{
+    
+}
 -(void) loadFriends
 {
     Me *me = [appdelegate getMe];
@@ -99,36 +104,166 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"WebTabCell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    static NSString *CellIdentifier = @"FriendCell";
+    FriendTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
+    Me *me = [appdelegate getMe];
     Friends *friend = [self.friends objectAtIndex:indexPath.row];
+    
+    // Check the status
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"Invitation" predicate:predicate];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+     {
+         if (!error)
+         {
+             PFObject *data =  [query getFirstObject];
+             if (data != nil)
+             {
+                 // If both parties have accepted they are ready to chat
+                 if (([[data objectForKey:@"targetAck"] intValue] + [[data objectForKey:@"sourceAck"] intValue] ) == 2)
+                 {
+                     cell.request.text = @"";
+                 }
+                 else
+                 {   // If I send message show waiting message
+                     cell.request.text = @"Waiting";
+                     
+                     // If I am recipient of request I need to accept the request
+                     if ([[data objectForKey:@"targetToken"] isEqualToString:me.token] )
+                     {
+                         if ([[data objectForKey:@"targetAck"] intValue] == 0)
+                             cell.request.text = @"Accept";
+                     }
+                 }
+             }
+             else
+             {
+                 // Nothis is done so Invite
+                 cell.request.text = @"Invite";
+             }
+             
+         }
+         else
+         {
+             // Log details of the failure
+             NSLog(@"Error: %@ %@", error, [error userInfo]);
+         }
+     }];
+    
+    // Handle message for people chatting
     cell.textLabel.text = friend.name;
+    
     if ([friend.badge intValue] > 0)
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"Messages %@", [friend.badge stringValue]];
+        cell.detailTextLabel.text = @"New Message";
     else
-         cell.detailTextLabel.text = @"";
-    cell.imageView.image = [JSAvatarImageFactory classicAvatarImageNamed:@"profile" croppedToCircle:YES];
+        cell.detailTextLabel.text = @"";
+    
     return cell;
 }
 
 // All done. Time to remove the public key from the keychain.
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     Friends *friend = [self.friends objectAtIndex:indexPath.row];
     Me *me = [appdelegate getMe];
+    BOOL __block ok = FALSE;
     
-    me.lastchattoken = friend.token;
+    // 1. Make sure there is a mutual invitation
+    //    PFObject *data = [appdelegate isApprovedToChat:me withFriends:friend];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
     
-    appdelegate.tokentarget = friend.token;
+    PFQuery *query = [PFQuery queryWithClassName:@"Invitation" predicate:predicate];
     
-   [appdelegate closeDrawer];
-    
-   friend.badge = [NSNumber numberWithInt:-1];
-   [appdelegate saveContext];
-    
-   [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:friend.name];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+     {
+         if (!error)
+         {
+             PFObject *data =  [query getFirstObject];
+             if (data != nil)
+             {
+                 // If sending, then set my ACK value
+                 if ([[data objectForKey:@"sourceToken"] isEqualToString:me.token] )
+                 {
+                     if ([[data objectForKey:@"sourceAck"] intValue] == 0)
+                     {
+                         [data setObject:[NSNumber numberWithInt:1] forKey:@"sourceAck"];
+                     }
+                     else
+                     {
+                         [tableView reloadData];
+                         return ;
+                     }
+                 }
+                 else
+                 {
+                     // If I receiving request then set my ACK value and push a notification
+                     if ([[data objectForKey:@"targetAck"] intValue] == 0)
+                     {
+                         [data setObject:[NSNumber numberWithInt:1] forKey:@"targetAck"];
+                         
+                         // Send a notification
+                         NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               [NSString stringWithFormat:
+                                                @"%@ has accepted your request",friend.name],@"alert" ,
+                                               friend.name, @"name",
+                                               @"1",@"ack",
+                                               nil];
+                         
+                         [appdelegate sendPush:friend.token withData:data];
+                     }
+                 }
+                 
+                 // No update the server
+                 if ([data isDirty])
+                     [data saveInBackground];
+                 
+                 if (([[data objectForKey:@"targetAck"] intValue] + [[data objectForKey:@"sourceAck"] intValue] ) == 2)
+                 {
+                     ok = TRUE;
+                 }
+                 else
+                 {
+                     ok = FALSE;
+                 }
+             }
+         }
+         else
+         {
+             ok = FALSE;
+             // Log details of the failure
+             NSLog(@"Error: %@ %@", error, [error userInfo]);
+         }
+         
+         if (ok)
+         {
+             me.lastchattoken = friend.token;
+             
+             appdelegate.tokentarget = friend.token;
+             
+             [appdelegate closeDrawer];
+             
+             friend.badge = [NSNumber numberWithInt:-1];
+             [appdelegate saveContext];
+             
+             [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:friend.name];
+         }
+         else
+         {
+             // Send the request to your friend
+             [appdelegate makeChatRequest:me withFriends:friend];
+             
+             [tableView reloadData];
+         }
+         
+     }];
 }
+
+
 
 - (void)didReceiveMemoryWarning
 {

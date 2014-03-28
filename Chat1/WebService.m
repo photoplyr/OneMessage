@@ -129,7 +129,7 @@
 {
     [self.responseData setLength:0];
 	self.statusCode = [(NSHTTPURLResponse *)response statusCode];
-    NSLog(@"self.statusCode: %d", self.statusCode);
+    NSLog(@"self.statusCode: %ld", self.statusCode);
     
     filesize = [NSNumber numberWithLongLong:[response expectedContentLength]];
     NSLog(@"content-length: %@ bytes", filesize);

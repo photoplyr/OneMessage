@@ -58,11 +58,9 @@
     NSString * url;
     
     [[PersistentDataProxy instance] loadLocalData];
-    NSDictionary * data = [PersistentDataProxy instance].localData;
     
     Me *me = [appdelegate getMe];
     
-    //if([[data objectForKey:@"sessionKey"] isEqualToString:@""] || [data count] == 0)
     if (me.name == nil)
     {
         url = @"https://new.onelogin.com/mobile_sessions/new";
@@ -117,7 +115,6 @@
 
 - (void)webServiceDidFinishWithSuccess:(NSString *)data
 {
-    
     Me *me = [appdelegate getMe];
     me.name = [UserProxy instance].userName ;
     [appdelegate saveContext];

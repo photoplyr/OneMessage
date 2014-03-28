@@ -21,7 +21,7 @@
 {
     [Parse setApplicationId:@"7d2nKN8Cqw4hhr5EDGhELPlWGFZt0947TUeFXTVU"
                   clientKey:@"F0emzjq4GiXfANuuhAdsnmE7JaUmuFlRYg7aYTCp"];
-
+    
     // Register for remote notifications
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
@@ -77,14 +77,14 @@
     NSString *did =[[[[deviceToken description] stringByReplacingOccurrencesOfString:@"<"withString:@""]
                      stringByReplacingOccurrencesOfString:@">" withString:@""]
                     stringByReplacingOccurrencesOfString: @" " withString: @""];
-
+    
     me.token = [NSString stringWithFormat:@"ID_%@",did];
     
     //  The local storage was wiped
     if (me.publickey == nil)
     {
         [[SecKeyWrapper sharedWrapper] deleteSymmetricKey];
-        [[SecKeyWrapper sharedWrapper] deleteAsymmetricKeys];
+        //[[SecKeyWrapper sharedWrapper] deleteAsymmetricKeys];
     }
     
     // Genereate the Symmetric Key used to wrapp the package
@@ -140,7 +140,7 @@
 -(void) loadServerData:(NSString *) stoken
 {
     // Try and load data from cloud
-     Me *me = [self getMe];
+    Me *me = [self getMe];
     
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"tokensource = %@",stoken];
     
@@ -163,9 +163,20 @@
     
     
     //
-
+    
 }
 
+-(void) sendPush:(NSString *) token withData:(NSDictionary *) data
+{
+    // Create time interval
+    NSTimeInterval interval = 60*60*24*7; // 1 week
+    
+    PFPush *push = [[PFPush alloc] init];
+    [push expireAfterTimeInterval:interval];
+    [push setChannels:[NSArray arrayWithObjects:token, nil]];
+    [push setData:data];
+    [push sendPushInBackground];
+}
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))handler {
     // Create empty photo object
     
@@ -179,13 +190,29 @@
     
     [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:userInfo];
     
+    
+    // New SMS Message
+    if ([userInfo objectForKey:@"ack"] != nil)
+    {
+        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Message Request"
+                                                       description:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
+                                                              type:TWMessageBarMessageTypeInfo];
+    }
+    
+    else if ([userInfo objectForKey:@"tokensource"] != nil)
+    {
     [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"New Message"
                                                    description:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
                                                           type:TWMessageBarMessageTypeInfo];
     
-    [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:nil withPubKey:nil withBadge:1];
     
-  //  [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:[userInfo objectForKey:@"key"] withBadge:1];
+    
+    [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:nil withPubKey:nil withBadge:1];
+    }
+    
+    
+    
+    //  [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:[userInfo objectForKey:@"key"] withBadge:1];
     
     NSLog(@"didReceiveRemoteNotification");
 }
@@ -272,6 +299,44 @@
     return friend;
 }
 
+-(void) makeChatRequest:(Me *) me withFriends:(Friends *)friend
+{
+    PFObject *newMessage = [PFObject objectWithClassName:@"Invitation"];
+    
+    [newMessage setObject:me.token forKey:@"sourceToken"];
+    [newMessage setObject:friend.token forKey:@"targetToken"];
+    
+    [newMessage setObject:[NSNumber numberWithInt:0] forKey:@"targetAck"];
+    [newMessage setObject:[NSNumber numberWithInt:1] forKey:@"sourceAck"];
+    
+    [newMessage saveInBackground];
+    
+    
+    // Send a notification to all devices subscribed to the "Giants" channel.
+    NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                          [NSString stringWithFormat:
+                           @"Invitation from %@",me.name],@"alert" ,
+                          me.name, @"name",
+                          @"1",@"ack",
+                          nil];
+    
+    [self sendPush:friend.token withData:data];
+    
+    [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Message Request"
+                                                   description:@"Your message request has been sent"
+                                                          type:TWMessageBarMessageTypeInfo];
+    
+}
+
+-(PFObject *)isApprovedToChat:(Me *) me withFriends:(Friends *)friend
+{
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"Invitation" predicate:predicate];
+    
+    return [query getFirstObject];
+}
+
 -(void) addFriend:(NSString *) name withToken:(NSString *) token withSymKey:(NSData *) symkey  withPubKey:(NSData *)pubkey withBadge:(int) badge
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -323,12 +388,10 @@
         
         [self saveContext];
     }
-    
 }
 
 -(void) addMessage:(NSString *) message from:(NSString *)siod to:(NSString *)toid forDate:(NSDate *) date
 {
-    
     Messager *data = [NSEntityDescription
                       insertNewObjectForEntityForName:@"Messager"
                       inManagedObjectContext:self.managedObjectContext];
@@ -350,8 +413,6 @@
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:YES];
     NSArray *sortDescriptors = [[NSArray alloc] initWithObjects:sortDescriptor, nil];
     [fetchRequest setSortDescriptors:sortDescriptors];
-    
-    // fetchRequest.predicate = [NSPredicate predicateWithFormat:@"sid = %@",sid];
     
     NSEntityDescription *entity = [NSEntityDescription
                                    entityForName:@"Messager" inManagedObjectContext:self.managedObjectContext];
@@ -386,8 +447,8 @@
     if ([myProfile count] == 0)
     {
         me = [NSEntityDescription
-                    insertNewObjectForEntityForName:@"Me"
-                    inManagedObjectContext:self.managedObjectContext];
+              insertNewObjectForEntityForName:@"Me"
+              inManagedObjectContext:self.managedObjectContext];
         
         [self saveContext];
     }

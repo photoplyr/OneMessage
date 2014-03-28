@@ -79,6 +79,10 @@
 -(Friends *) getFriend:(NSString *) friendToken;
 -(Me *) getMe;
 
+-(void) sendPush:(NSString *) token withData:(NSDictionary *) data;
+
+-(PFObject *)isApprovedToChat:(Me *) me withFriends:(Friends *)friend;
+-(void) makeChatRequest:(Me *) me withFriends:(Friends *)friend;
 
 -(void) unsubscribe:(NSString *) sid;
 -(void) subscribe:(NSString *) sid;

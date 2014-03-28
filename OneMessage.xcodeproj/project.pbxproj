@@ -18,6 +18,8 @@
 		4A15D4DE18E4ADBB00821466 /* NSData+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4DA18E4ADBB00821466 /* NSData+Additions.m */; };
 		4A15D4DF18E4ADBB00821466 /* NSDictionary+UrlEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4DD18E4ADBB00821466 /* NSDictionary+UrlEncoding.m */; };
 		4A15D4E218E4B3A400821466 /* CoreDataAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4E118E4B3A400821466 /* CoreDataAccess.m */; };
+		4A15D54A18E608C900821466 /* InviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D54918E608C900821466 /* InviteViewController.m */; };
+		4A15D54D18E6197500821466 /* FriendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D54C18E6197500821466 /* FriendTableViewCell.m */; };
 		4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */; };
 		4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */; };
 		4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -118,6 +120,10 @@
 		4A15D4DD18E4ADBB00821466 /* NSDictionary+UrlEncoding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+UrlEncoding.m"; sourceTree = "<group>"; };
 		4A15D4E018E4B3A400821466 /* CoreDataAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataAccess.h; sourceTree = "<group>"; };
 		4A15D4E118E4B3A400821466 /* CoreDataAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataAccess.m; sourceTree = "<group>"; };
+		4A15D54818E608C900821466 /* InviteViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InviteViewController.h; sourceTree = "<group>"; };
+		4A15D54918E608C900821466 /* InviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteViewController.m; sourceTree = "<group>"; };
+		4A15D54B18E6197500821466 /* FriendTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendTableViewCell.h; sourceTree = "<group>"; };
+		4A15D54C18E6197500821466 /* FriendTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendTableViewCell.m; sourceTree = "<group>"; };
 		4A3F9C8918DCD0C10023C00C /* JSQSystemSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQSystemSoundPlayer.h; sourceTree = "<group>"; };
 		4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQSystemSoundPlayer.m; sourceTree = "<group>"; };
 		4A3F9C8C18DCD6E40023C00C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -295,6 +301,15 @@
 			name = PortalUtil;
 			sourceTree = "<group>";
 		};
+		4A15D54E18E6197800821466 /* TableCell */ = {
+			isa = PBXGroup;
+			children = (
+				4A15D54B18E6197500821466 /* FriendTableViewCell.h */,
+				4A15D54C18E6197500821466 /* FriendTableViewCell.m */,
+			);
+			name = TableCell;
+			sourceTree = "<group>";
+		};
 		4A3F9C8F18DCDF100023C00C /* IOSCrypt */ = {
 			isa = PBXGroup;
 			children = (
@@ -398,8 +413,11 @@
 				4ACC3BEA18D7A4450041AC99 /* JSMessage */,
 				4ACC3BBD18D7A43F0041AC99 /* AppDelegate.h */,
 				4ACC3BBE18D7A43F0041AC99 /* AppDelegate.m */,
+				4A15D54E18E6197800821466 /* TableCell */,
 				4A15D4E018E4B3A400821466 /* CoreDataAccess.h */,
 				4A15D4E118E4B3A400821466 /* CoreDataAccess.m */,
+				4A15D54818E608C900821466 /* InviteViewController.h */,
+				4A15D54918E608C900821466 /* InviteViewController.m */,
 				4ACC3BC018D7A43F0041AC99 /* Main.storyboard */,
 				4ACD7EB818DA31CB002AD0A1 /* WebViewController.h */,
 				4ACD7EB918DA31CB002AD0A1 /* WebViewController.m */,
@@ -658,8 +676,10 @@
 				4A00D5A718E2471200051869 /* Friends.m in Sources */,
 				4ACC3C0E18D7A4520041AC99 /* JSMessagesViewController.m in Sources */,
 				4AAC54FD18DA2B2500AD6090 /* MMDrawerBarButtonItem.m in Sources */,
+				4A15D54A18E608C900821466 /* InviteViewController.m in Sources */,
 				4A15D4CC18E4AD5900821466 /* WebService.m in Sources */,
 				4ACC3BBF18D7A43F0041AC99 /* AppDelegate.m in Sources */,
+				4A15D54D18E6197500821466 /* FriendTableViewCell.m in Sources */,
 				4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */,
 				4ACD7EBE18DA3218002AD0A1 /* UserProxy.m in Sources */,
 				4ACC3C1118D7A4520041AC99 /* JSAvatarImageFactory.m in Sources */,

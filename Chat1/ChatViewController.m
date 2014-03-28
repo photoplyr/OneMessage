@@ -60,21 +60,6 @@
     NSLog(@"Channel Ready %@",o);
 }
 
-//-(void) unsubscribe:(NSString *) sid
-//{
-//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-//    [currentInstallation removeObject:sid forKey:@"channels"];
-//    [currentInstallation saveInBackground];
-//}
-//
-//-(void) subscribe:(NSString *) sid
-//{
-//    // When users indicate they are Giants fans, we subscribe them to that channel.
-//    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-//    [currentInstallation addUniqueObject:sid forKey:@"channels"];
-//    [currentInstallation saveInBackground];
-//}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -87,16 +72,10 @@
     self.sender = [defaults stringForKey:APPNAME];
     
     
-   if (appdelegate.tokentarget == nil)
+    if (appdelegate.tokentarget == nil)
     {
         appdelegate.tokentarget = me.lastchattoken;
     }
-    
-    // ADDED OL Web login page
-    //    if (me.name == nil)
-    //    {
-    //        [self presentChatNameDialog];
-    //    }
     
     [self loadMessages:nil];
     [self scrollToBottomAnimated:NO];
@@ -228,10 +207,10 @@
                               {
                                   [self.messages addObject:[[JSMessage alloc] initWithText:[self decryptMessage:[message objectForKey:@"cryptext"]] sender:[message objectForKey:@"userName"] date:[message objectForKey:@"date"]]];
                               }
-                              
-                              [self.tableView reloadData];
-                              [self scrollToBottomAnimated:YES];
                           }
+                          
+                          [self.tableView reloadData];
+                          [self scrollToBottomAnimated:YES];
                       }
                       else
                       {
@@ -245,6 +224,10 @@
              // The request failed, we'll keep the chatData count?
              number = (int)[self.messages count];
          }
+         
+         [self.tableView reloadData];
+         [self scrollToBottomAnimated:YES];
+         
      }];
 }
 
@@ -413,14 +396,8 @@
                           me.token,@"tokensource",
                           nil];
     
-    // Create time interval
-    NSTimeInterval interval = 60*60*24*7; // 1 week
     
-    PFPush *push = [[PFPush alloc] init];
-    [push expireAfterTimeInterval:interval];
-    [push setChannels:[NSArray arrayWithObjects:appdelegate.tokentarget, nil]];
-    [push setData:data];
-    [push sendPushInBackground];
+    [appdelegate sendPush:appdelegate.tokentarget withData:data];
     
     text = @"";
     [self scrollToBottomAnimated:YES];
@@ -539,52 +516,4 @@
     [message show];
     isShowingAlertView = YES;
 }
-
-//- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-//{
-//    Me *me = [appdelegate getMe];
-//    
-//    if (buttonIndex != 0)
-//    {
-//        
-//        if (me.token == nil)
-//        {
-//            NSLog(@"---------- ERROR NO SOURCE TOKEN --------------");
-//            return;
-//        }
-//        
-//        UITextField *textField = [alertView textFieldAtIndex:0];
-//        NSLog(@"Plain text input: %@",textField.text);
-//        self.sender = [textField.text capitalizedString ];
-//        [[NSUserDefaults standardUserDefaults] setObject:self.sender forKey:APPNAME];
-//        [[NSUserDefaults standardUserDefaults] synchronize];
-//        isShowingAlertView = NO;
-//        
-//        //Save Data to Parse
-//        me.name = self.sender;
-//        [appdelegate saveContext];
-//        
-//        // going for the parsing
-//        PFObject *newMessage = [PFObject objectWithClassName:@"Users"];
-//        [newMessage setObject:me.token forKey:@"tokensource"];
-//        [newMessage setObject: me.publickey forKey:@"publickeysource"];
-//        [newMessage setObject: me.symkey forKey:@"symkeysource"];
-//        [newMessage setObject:me.name forKey:@"userName"];
-//        [newMessage saveInBackground];
-//        
-//    }
-//    else if (isFirstShown)
-//    {
-//        UIAlertView *alert = [[UIAlertView alloc]
-//                              initWithTitle:@"Ooops"
-//                              message:@"Something's gone wrong. To post in this room you must have a OneMessage name. Go to the options panel to define one"
-//                              delegate:self
-//                              cancelButtonTitle:nil
-//                              otherButtonTitles:@"Dismiss", nil];
-//        [alert show];
-//        isFirstShown = NO;
-//    }
-//}
-
-
 @end

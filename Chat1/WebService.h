@@ -19,7 +19,7 @@
 @property (nonatomic, retain) NSMutableDictionary * params;
 @property (nonatomic, copy) NSString * data;
 @property (nonatomic, copy) NSString * url;
-@property (nonatomic, readwrite) int statusCode;
+@property (nonatomic, readwrite) long statusCode;
 @property (nonatomic, readwrite) int minRequiredStatusCode;
 @property (nonatomic, readwrite) BOOL requiresSessionToken;
 
