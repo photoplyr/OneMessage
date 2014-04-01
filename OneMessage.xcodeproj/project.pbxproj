@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4A0EF12618E62EA000E997CB /* Friends.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A0EF12518E62EA000E997CB /* Friends.m */; };
 		4A15D4C518E3684000821466 /* Me.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4C418E3684000821466 /* Me.m */; };
 		4A15D4CB18E4AD5900821466 /* GetInfoService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4C818E4AD5900821466 /* GetInfoService.m */; };
 		4A15D4CC18E4AD5900821466 /* WebService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4CA18E4AD5900821466 /* WebService.m */; };
@@ -20,14 +19,11 @@
 		4A15D4E218E4B3A400821466 /* CoreDataAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D4E118E4B3A400821466 /* CoreDataAccess.m */; };
 		4A15D54A18E608C900821466 /* InviteViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D54918E608C900821466 /* InviteViewController.m */; };
 		4A15D54D18E6197500821466 /* FriendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A15D54C18E6197500821466 /* FriendTableViewCell.m */; };
+		4A32EFBA18EB63DD00CF66DA /* Friends.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A32EFB918EB63DD00CF66DA /* Friends.m */; };
 		4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */; };
-		4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */; };
 		4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		4A887D6D18DC9DC300CC607E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A887D6B18DC9DC300CC607E /* libcrypto.a */; };
 		4A887D6E18DC9DC300CC607E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A887D6C18DC9DC300CC607E /* libssl.a */; };
-		4A887D7818DCA24D00CC607E /* NuBinaryEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A887D7318DCA24D00CC607E /* NuBinaryEncoding.m */; };
-		4A887D7918DCA24D00CC607E /* NuCommonCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A887D7518DCA24D00CC607E /* NuCommonCrypto.m */; };
-		4A887D7A18DCA24D00CC607E /* NuRSAKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A887D7718DCA24D00CC607E /* NuRSAKey.m */; };
 		4AAC54D518D8E33300AD6090 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AAC54D418D8E33300AD6090 /* Parse.framework */; };
 		4AAC54D718D8E3AD00AD6090 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AAC54D618D8E3AD00AD6090 /* CFNetwork.framework */; };
 		4AAC54D918D8E3C900AD6090 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AAC54D818D8E3C900AD6090 /* AudioToolbox.framework */; };
@@ -97,8 +93,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		4A0EF12418E62EA000E997CB /* Friends.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Friends.h; sourceTree = "<group>"; };
-		4A0EF12518E62EA000E997CB /* Friends.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Friends.m; sourceTree = "<group>"; };
 		4A15D4C318E3684000821466 /* Me.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Me.h; sourceTree = "<group>"; };
 		4A15D4C418E3684000821466 /* Me.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Me.m; sourceTree = "<group>"; };
 		4A15D4C718E4AD5900821466 /* GetInfoService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetInfoService.h; sourceTree = "<group>"; };
@@ -124,21 +118,15 @@
 		4A15D54918E608C900821466 /* InviteViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InviteViewController.m; sourceTree = "<group>"; };
 		4A15D54B18E6197500821466 /* FriendTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendTableViewCell.h; sourceTree = "<group>"; };
 		4A15D54C18E6197500821466 /* FriendTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendTableViewCell.m; sourceTree = "<group>"; };
+		4A32EFB818EB63DD00CF66DA /* Friends.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Friends.h; sourceTree = "<group>"; };
+		4A32EFB918EB63DD00CF66DA /* Friends.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Friends.m; sourceTree = "<group>"; };
 		4A3F9C8918DCD0C10023C00C /* JSQSystemSoundPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQSystemSoundPlayer.h; sourceTree = "<group>"; };
 		4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSQSystemSoundPlayer.m; sourceTree = "<group>"; };
-		4A3F9C8C18DCD6E40023C00C /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
-		4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
 		4A3F9CA218DCE0A50023C00C /* CryptoCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCommon.h; sourceTree = "<group>"; };
 		4A3F9CA518DCE0A50023C00C /* SecKeyWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecKeyWrapper.h; sourceTree = "<group>"; };
 		4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecKeyWrapper.m; sourceTree = "<group>"; };
 		4A887D6B18DC9DC300CC607E /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		4A887D6C18DC9DC300CC607E /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
-		4A887D7218DCA24D00CC607E /* NuBinaryEncoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NuBinaryEncoding.h; sourceTree = "<group>"; };
-		4A887D7318DCA24D00CC607E /* NuBinaryEncoding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NuBinaryEncoding.m; sourceTree = "<group>"; };
-		4A887D7418DCA24D00CC607E /* NuCommonCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NuCommonCrypto.h; sourceTree = "<group>"; };
-		4A887D7518DCA24D00CC607E /* NuCommonCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NuCommonCrypto.m; sourceTree = "<group>"; };
-		4A887D7618DCA24D00CC607E /* NuRSAKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NuRSAKey.h; sourceTree = "<group>"; };
-		4A887D7718DCA24D00CC607E /* NuRSAKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NuRSAKey.m; sourceTree = "<group>"; };
 		4AAC54D418D8E33300AD6090 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		4AAC54D618D8E3AD00AD6090 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		4AAC54D818D8E3C900AD6090 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -323,14 +311,6 @@
 		4A887D7118DCA24200CC607E /* CRYPTO */ = {
 			isa = PBXGroup;
 			children = (
-				4A3F9C8C18DCD6E40023C00C /* NSData+Base64.h */,
-				4A3F9C8D18DCD6E40023C00C /* NSData+Base64.m */,
-				4A887D7218DCA24D00CC607E /* NuBinaryEncoding.h */,
-				4A887D7318DCA24D00CC607E /* NuBinaryEncoding.m */,
-				4A887D7418DCA24D00CC607E /* NuCommonCrypto.h */,
-				4A887D7518DCA24D00CC607E /* NuCommonCrypto.m */,
-				4A887D7618DCA24D00CC607E /* NuRSAKey.h */,
-				4A887D7718DCA24D00CC607E /* NuRSAKey.m */,
 			);
 			name = CRYPTO;
 			sourceTree = "<group>";
@@ -506,8 +486,8 @@
 		4ACC3C1918D7A4D10041AC99 /* CoreData */ = {
 			isa = PBXGroup;
 			children = (
-				4A0EF12418E62EA000E997CB /* Friends.h */,
-				4A0EF12518E62EA000E997CB /* Friends.m */,
+				4A32EFB818EB63DD00CF66DA /* Friends.h */,
+				4A32EFB918EB63DD00CF66DA /* Friends.m */,
 				4A15D4C318E3684000821466 /* Me.h */,
 				4A15D4C418E3684000821466 /* Me.m */,
 				4AAC54E918D8EA5D00AD6090 /* Messager.h */,
@@ -687,23 +667,20 @@
 				4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */,
 				4ACC3C1218D7A4520041AC99 /* JSBubbleImageViewFactory.m in Sources */,
 				4A15D4D718E4AD8E00821466 /* ErrorParser.m in Sources */,
+				4A32EFBA18EB63DD00CF66DA /* Friends.m in Sources */,
 				4A15D4E218E4B3A400821466 /* CoreDataAccess.m in Sources */,
 				4ACC3C0918D7A4520041AC99 /* JSBubbleView.m in Sources */,
-				4A3F9C8E18DCD6E40023C00C /* NSData+Base64.m in Sources */,
 				4ACC3C1418D7A4520041AC99 /* UIColor+JSMessagesView.m in Sources */,
 				4ACD7ECD18DA3325002AD0A1 /* PersistentDataProxy.m in Sources */,
 				4ACC3BBB18D7A43F0041AC99 /* main.m in Sources */,
-				4A887D7818DCA24D00CC607E /* NuBinaryEncoding.m in Sources */,
 				4A15D4D018E4AD7800821466 /* Command.m in Sources */,
 				4AAC54FB18DA2B2500AD6090 /* MMDrawerController+Storyboard.m in Sources */,
 				4ACC3C1018D7A4520041AC99 /* JSMessageTextView.m in Sources */,
-				4A887D7918DCA24D00CC607E /* NuCommonCrypto.m in Sources */,
 				4A15D4C518E3684000821466 /* Me.m in Sources */,
 				4ACD7ED118DA335F002AD0A1 /* Util.m in Sources */,
 				4ACD7EB718DA30DC002AD0A1 /* FriendsViewController.m in Sources */,
 				4A15D4D918E4AD8E00821466 /* UserInfoParser.m in Sources */,
 				4ACC3C0D18D7A4520041AC99 /* JSMessageSoundEffect.m in Sources */,
-				4A0EF12618E62EA000E997CB /* Friends.m in Sources */,
 				4ACC3C1F18D8A8B90041AC99 /* NavigationViewController.m in Sources */,
 				4A15D4CB18E4AD5900821466 /* GetInfoService.m in Sources */,
 				4ACD7ED518DA33B0002AD0A1 /* SFHFKeychainUtils.m in Sources */,
@@ -714,7 +691,6 @@
 				4ACC3C2E18D8BB860041AC99 /* Chat1.xcdatamodeld in Sources */,
 				4ACC3C1518D7A4520041AC99 /* UIImage+JSMessagesView.m in Sources */,
 				4AAC54FC18DA2B2500AD6090 /* UIViewController+MMDrawerController.m in Sources */,
-				4A887D7A18DCA24D00CC607E /* NuRSAKey.m in Sources */,
 				4A15D4DF18E4ADBB00821466 /* NSDictionary+UrlEncoding.m in Sources */,
 				4AAC54FA18DA2B2500AD6090 /* MMDrawerController.m in Sources */,
 				4AAC54FE18DA2B2500AD6090 /* MMDrawerVisualState.m in Sources */,

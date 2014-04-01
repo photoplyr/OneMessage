@@ -34,6 +34,7 @@
     self.dataSource = self;
     
     appdelegate = [[UIApplication sharedApplication] delegate];
+    self.messages = [[NSMutableArray alloc] init];
     
     [[JSBubbleView appearance] setFont:[UIFont systemFontOfSize:16.0f]];
     
@@ -72,22 +73,29 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.sender = [defaults stringForKey:APPNAME];
     
-    
     if (appdelegate.tokentarget == nil)
     {
         appdelegate.tokentarget = me.lastchattoken;
     }
-    
+    [self loadSymKey];
     [self loadMessages:nil];
     [self scrollToBottomAnimated:NO];
 }
 
 #pragma mark - Actions
+
 -(void) loadMessages:(NSNotification *)note
 {
-    self.messages = [[NSMutableArray alloc] init];
+    NSDictionary *data  = (NSDictionary*)[note object];
     
-    [self loadLocalChat];
+    NSArray *allKeys = [data allKeys];
+    BOOL retVal = [allKeys containsObject:@"tokensource"];
+    
+    if ((self.title != nil) && (retVal == true))
+        if (![appdelegate.tokentarget isEqualToString:[data objectForKey:@"tokensource"]])
+            return;
+    
+    [self loadLocalChat: [data objectForKey:@"obj"]];
 }
 
 -(IBAction)open:(id)sender
@@ -146,14 +154,13 @@
      }];
 }
 
-- (void)loadLocalChat
+- (void)loadLocalChat:(NSString *)oid
 {
     if (appdelegate.tokentarget == nil)
         return;
     
-    [self loadSymKey];
-    
     Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    
     self.title = [friend.name uppercaseString];
     
     className = APPNAME;
@@ -161,75 +168,85 @@
     if (me.token == nil)
         return;
     
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
+    NSPredicate *predicate;
+    
+    if (oid == nil)
+        predicate = [NSPredicate predicateWithFormat:@"(sourceToken = %@ and targetToken = %@) OR (targetToken = %@ and sourceToken = %@)",me.token,friend.token,me.token,friend.token];
+    else
+        predicate = [NSPredicate predicateWithFormat:@"objectId = %@",oid];
     
     PFQuery *query = [PFQuery queryWithClassName:className predicate:predicate];
     
-    __block int totalNumberOfEntries = 0;
-    [query orderByAscending:@"createdAt"];
-    [query countObjectsInBackgroundWithBlock:^(int number, NSError *error)
-     {
-         if (!error)
+    if (oid != nil)
+    {
+        PFQuery *query = [PFQuery queryWithClassName:APPNAME];
+        [query getObjectInBackgroundWithId:oid block:^(PFObject *message, NSError *error) {
+            
+            // Do something with the returned PFObject in the gameScore variable.
+            [self.messages addObject:[[JSMessage alloc] initWithText:[self decryptMessage:[message objectForKey:@"cryptext"]] sender:[message objectForKey:@"userName"] date:[message objectForKey:@"date"]]];
+            
+            // Now insert a new row
+            NSMutableArray *insertIndexPaths = [[NSMutableArray alloc] init];
+            NSIndexPath *newPath = [NSIndexPath indexPathForRow:0 inSection:0];
+            [insertIndexPaths addObject:newPath];
+            [self.tableView beginUpdates];
+            [self.tableView insertRowsAtIndexPaths:insertIndexPaths withRowAnimation:UITableViewRowAnimationTop];
+            [self.tableView endUpdates];
+            [self.tableView reloadData];
+            [self scrollToBottomAnimated:YES];
+        }];
+    }
+    else
+    {
+        [query orderByAscending:@"createdAt"];
+        [query countObjectsInBackgroundWithBlock:^(int number, NSError *error)
          {
-             // The count request succeeded. Log the count
-             NSLog(@"There are currently %d entries", number);
-             
-             if (totalNumberOfEntries != number)
+             if (!error)
              {
-                 totalNumberOfEntries = number;
+                 // The count request succeeded. Log the count
+                 NSLog(@"There are currently %d entries", number);
                  
-                 NSLog(@"Retrieving data");
-                 int theLimit;
-                 
-                 if (totalNumberOfEntries - [self.messages count] > MAX_ENTRIES_LOADED)
-                 {
+                     NSLog(@"Retrieving data");
+                     int theLimit;
+                     
+                     theLimit = MAX_ENTRIES_LOADED - (int)[self.messages count];
+                     
+                     if (theLimit >MAX_ENTRIES_LOADED)
                      theLimit = MAX_ENTRIES_LOADED;
-                 }
-                 else
-                 {
-                     theLimit = (int)(totalNumberOfEntries - [self.messages count]);
-                 }
-                 
-                 query.limit = theLimit;
-                 
-                 [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
-                  {
-                      if (!error)
+                     
+                     query.limit = theLimit;
+                     
+                     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
                       {
-                          // The find succeeded.
-                          NSLog(@"Successfully retrieved %lu chats.", (unsigned long)objects.count);
-                          
-                          if ([objects count] != [self.messages count])
+                          if (!error)
                           {
-                              //[self.messages addObjectsFromArray:objects];
-                              [self.messages removeAllObjects];
+                              // The find succeeded.
+                              NSLog(@"Successfully retrieved %lu chats.", (unsigned long)objects.count);
                               
-                              for(id message in objects)
+                              if ([objects count] != [self.messages count])
                               {
-                                  [self.messages addObject:[[JSMessage alloc] initWithText:[self decryptMessage:[message objectForKey:@"cryptext"]] sender:[message objectForKey:@"userName"] date:[message objectForKey:@"date"]]];
+                                  [self.messages removeAllObjects];
+                                  
+                                  for(id message in objects)
+                                  {
+                                      [self.messages addObject:[[JSMessage alloc] initWithText:[self decryptMessage:[message objectForKey:@"cryptext"]] sender:[message objectForKey:@"userName"] date:[message objectForKey:@"date"]]];
+                                  }
                               }
+                              
+                              [self.tableView reloadData];
+                              [self scrollToBottomAnimated:YES];
                           }
-                          
-                          [self.tableView reloadData];
-                          [self scrollToBottomAnimated:YES];
-                      }
-                      else
-                      {
-                          // Log details of the failure
-                          NSLog(@"Error: %@ %@", error, [error userInfo]);
-                      }
-                  }];
-             }
+                          else
+                          {
+                              // Log details of the failure
+                              NSLog(@"Error: %@ %@", error, [error userInfo]);
+                          }
+                      }];
+                 }
              
-         } else {
-             // The request failed, we'll keep the chatData count?
-             number = (int)[self.messages count];
-         }
-         
-         [self.tableView reloadData];
-         [self scrollToBottomAnimated:YES];
-         
-     }];
+         }];
+        
+    }
 }
 
 
@@ -352,6 +369,7 @@
     return message;
 }
 
+PFObject *newMessage;
 - (void)didSendText:(NSString *)text fromSender:(NSString *)sender onDate:(NSDate *)date
 {
     Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
@@ -385,7 +403,7 @@
     message = [self encryptMessage:text];
     
     // going for the parsing
-    PFObject *newMessage = [PFObject objectWithClassName:APPNAME];
+    newMessage = [PFObject objectWithClassName:APPNAME];
     [newMessage setObject:text forKey:@"text"];
     [newMessage setObject:message forKey:@"cryptext"];
     
@@ -396,22 +414,35 @@
     
     [newMessage setObject:me.token forKey:@"device"];
     [newMessage setObject:date forKey:@"date"];
-    [newMessage saveInBackground];
-    
-    // Send a notification to all devices subscribed to the "Giants" channel.
-    NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
-                          [NSString stringWithFormat:
-                           @"Message from %@",me.name],@"alert" ,
-                          @"Increment", @"badge",
-                          sender, @"name",
-                          me.token,@"tokensource",
-                          nil];
-    
-    
-    [appdelegate sendPush:appdelegate.tokentarget withData:data];
+    [newMessage saveInBackgroundWithTarget: self selector:@selector(nowPush: error:)];
     
     text = @"";
-    [self scrollToBottomAnimated:YES];
+    //[self finishSend];
+}
+
+
+-(void) nowPush:(NSNumber *)result error:(NSError *)error
+{
+    
+    if ([result boolValue])
+    {
+        
+        [newMessage refresh];
+        NSString *objectId = newMessage.objectId;
+        
+        // Send a notification to all devices subscribed to the "Giants" channel.
+        NSDictionary *data = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [NSString stringWithFormat:
+                               @"Message from %@",me.name],@"alert" ,
+                              @"Increment", @"badge",
+                              me.name, @"name",
+                              objectId, @"obj",
+                              me.token,@"tokensource",
+                              nil];
+        
+        
+        [appdelegate sendPush:appdelegate.tokentarget withData:data];
+    }
 }
 
 - (JSBubbleMessageType)messageTypeForRowAtIndexPath:(NSIndexPath *)indexPath

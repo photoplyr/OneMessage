@@ -174,10 +174,21 @@
                                             NSParagraphStyleAttributeName : paragraphStyle }];
         }
         else {
-            [self.placeHolder drawInRect:placeHolderRect
-                                withFont:self.font
-                           lineBreakMode:NSLineBreakByTruncatingTail
-                               alignment:self.textAlignment];
+            //TLS
+            NSMutableParagraphStyle *textStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+            textStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+            textStyle.alignment = NSTextAlignmentCenter;
+            
+            NSDictionary *dictionary = @{ NSFontAttributeName: self.font,
+                                         NSParagraphStyleAttributeName:textStyle};
+            
+            [self.placeHolder drawInRect:placeHolderRect withAttributes:dictionary];
+            
+            
+//            [self.placeHolder drawInRect:placeHolderRect
+//                                withFont:self.font
+//                           lineBreakMode:NSLineBreakByTruncatingTail
+//                               alignment:self.textAlignment];
         }
     }
 }

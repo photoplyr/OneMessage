@@ -13,6 +13,7 @@
 @interface FriendsViewController ()
 {
     AppDelegate *appdelegate;
+    NSNotificationCenter *notify;
 }
 
 @end
@@ -32,10 +33,13 @@
 {
     [super viewDidLoad];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadMessages) name:NEWMESSAGE object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadMessages) name:NEWMESSAGE object:nil];
     
     appdelegate = [[UIApplication sharedApplication] delegate];
 }
+
+
+
 
 -(void) loadMessages
 {
@@ -72,7 +76,7 @@
          if (!error)
          {
              // The find succeeded.
-             NSLog(@"Successfully retrieved %d friends from cache.", objects.count);
+             NSLog(@"Successfully retrieved %lu friends from cache.", (unsigned long)objects.count);
              [friends removeAllObjects];
              
              for(id friend in objects)
@@ -117,6 +121,8 @@
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
      {
+         
+         
          if (!error)
          {
              PFObject *data =  [query getFirstObject];
@@ -154,7 +160,6 @@
                  friend.approved = [NSNumber numberWithBool:NO];
                  [appdelegate saveContext];
              }
-             
          }
          else
          {
@@ -185,7 +190,7 @@
     
     if ([friend.approved boolValue])
     {
-      [self loadMessageCenter:me andFriend:friend];
+        [self loadMessageCenter:me andFriend:friend];
     }
     
     else
@@ -213,7 +218,6 @@
                          else
                          {
                              [tableView reloadData];
-                             
                          }
                      }
                      else
@@ -262,7 +266,7 @@
              if (ok)
              {
                  [self loadMessageCenter:me andFriend:friend];
-              }
+             }
              else
              {
                  // Send the request to your friend
@@ -277,16 +281,17 @@
 
 -(void) loadMessageCenter:(Me *) me andFriend:(Friends *) friend
 {
-             me.lastchattoken = friend.token;
-
-             appdelegate.tokentarget = friend.token;
-
-             [appdelegate closeDrawer];
-
-             friend.badge = [NSNumber numberWithInt:-1];
-             [appdelegate saveContext];
-
-             [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:friend.name];
+    me.lastchattoken = friend.token;
+    
+    appdelegate.tokentarget = friend.token;
+    
+    [appdelegate closeDrawer];
+    
+    friend.badge = [NSNumber numberWithInt:-1];
+    [appdelegate saveContext];
+    
+    NSDictionary *dict = [[NSDictionary alloc] initWithObjectsAndKeys:friend.name, @"name",  nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NEWMESSAGE object:dict];
 }
 
 - (void)didReceiveMemoryWarning

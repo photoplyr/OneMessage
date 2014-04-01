@@ -140,8 +140,7 @@ static SecKeyWrapper * __sharedKeyWrapper = nil;
     return self;
 }
 
-- (void)release {
-}
+- (void)release {}
 
 - (id)retain {
     return self;
@@ -465,7 +464,7 @@ static SecKeyWrapper * __sharedKeyWrapper = nil;
 	// Initialize the context.
 	CC_SHA1_Init(&ctx);
 	// Perform the hash.
-	CC_SHA1_Update(&ctx, (void *)[plainText bytes], [plainText length]);
+	CC_SHA1_Update(&ctx, (void *)[plainText bytes], (int)[plainText length]);
 	// Finalize the output.
 	CC_SHA1_Final(hashBytes, &ctx);
 	

@@ -432,12 +432,28 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
         {
             [kTWMessageViewTitleColor set];
             
-            [self.titleString drawInRect:CGRectMake(xOffset, yOffset, titleLabelSize.width, titleLabelSize.height) withFont:kTWMessageViewTitleFont lineBreakMode:NSLineBreakByTruncatingTail alignment:NSTextAlignmentLeft];
+            NSMutableParagraphStyle *textStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+            textStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+            textStyle.alignment = NSTextAlignmentLeft;
+            
+            NSDictionary *dictionary = @{ NSFontAttributeName: kTWMessageViewTitleFont,
+                                          NSParagraphStyleAttributeName:textStyle};
+            
+            [self.self.titleString drawInRect:CGRectMake(xOffset, yOffset, titleLabelSize.width, titleLabelSize.height) withAttributes:dictionary];
+
+            
+            //[self.titleString drawInRect:CGRectMake(xOffset, yOffset, titleLabelSize.width, titleLabelSize.height) withFont:kTWMessageViewTitleFont lineBreakMode:NSLineBreakByTruncatingTail alignment:NSTextAlignmentLeft];
             
             yOffset += titleLabelSize.height;
             
             [kTWMessageViewDescriptionColor set];
-            [self.descriptionString drawInRect:CGRectMake(xOffset, yOffset, descriptionLabelSize.width, descriptionLabelSize.height) withFont:kTWMessageViewDescriptionFont lineBreakMode:NSLineBreakByTruncatingTail alignment:NSTextAlignmentLeft];
+            //[self.descriptionString drawInRect:CGRectMake(xOffset, yOffset, descriptionLabelSize.width, descriptionLabelSize.height) withFont:kTWMessageViewDescriptionFont lineBreakMode:NSLineBreakByTruncatingTail alignment:NSTextAlignmentLeft];
+            
+            dictionary = @{ NSFontAttributeName: kTWMessageViewDescriptionFont,
+                                          NSParagraphStyleAttributeName:textStyle};
+            [self.self.self.descriptionString drawInRect:CGRectMake(xOffset, yOffset, descriptionLabelSize.width, descriptionLabelSize.height) withAttributes:dictionary];
+            
+
         }
     }
 }

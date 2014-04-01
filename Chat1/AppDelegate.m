@@ -204,15 +204,10 @@
     [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"New Message"
                                                    description:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]
                                                           type:TWMessageBarMessageTypeInfo];
-    
-    
-    
+        
     [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:nil withPubKey:nil withBadge:1];
     }
     
-    
-    
-    //  [self addFriend:[userInfo objectForKey:@"name"] withToken:[userInfo objectForKey:@"tokensource"] withSymKey:[userInfo objectForKey:@"key"] withBadge:1];
     
     NSLog(@"didReceiveRemoteNotification");
 }
