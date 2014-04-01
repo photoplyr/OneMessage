@@ -264,8 +264,6 @@
     return  data;
 }
 
-
-
 -(NSData *) encryptMessage:(NSString *) blog
 {
     NSData *data = [self _encryptMessage:blog];
@@ -300,7 +298,6 @@
                                                         key:symmetricKey
                                                     context:kCCDecrypt
                                                     padding:&pad];
-        
         
         // Verify the signature.
         verified = [[SecKeyWrapper sharedWrapper] verifySignature:plainText
