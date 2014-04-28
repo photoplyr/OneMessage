@@ -16,6 +16,10 @@
 @property (strong, nonatomic) NSMutableArray *messages;
 @property (strong, nonatomic) NSDictionary *avatars;
 @property (nonatomic, strong)  UIProgressView *progress;
-- (NSString *)decryptMessage:(NSData *)blob;
 
+- (NSString *)decryptMessage:(NSData *)blob;
+- (NSData *)decryptData:(NSData *)blob;
+
+-(NSData *) encryptMessage:(NSString *) blog;
+-(NSData *) encryptData:(NSData *) blog;
 @end

@@ -512,6 +512,19 @@
     return  data;
 }
 
+- (NSData *)decryptData:(NSData *)blob
+{
+    NSData *data = [self _decryptData:blob];
+    
+    return  data;
+}
+
+-(NSData *) encryptData:(NSData *) blog
+{
+    NSData *data = [self _encryptData:blog];
+    return  data;
+}
+
 - (NSString *)_decryptMessage:(NSData *)blob
 {
     NSMutableDictionary * message = nil;
@@ -564,6 +577,104 @@
     return [[NSString alloc] initWithData:plainText encoding:NSASCIIStringEncoding];
 }
 
+- (NSData *)_decryptData:(NSData *)blob
+{
+    NSMutableDictionary * message = nil;
+    NSString * error = nil;
+    
+    BOOL verified = NO;
+    CCOptions pad = 0;
+    SecKeyRef publicKeyRef = NULL;
+    NSData * data = nil;
+    
+    message = [NSPropertyListSerialization propertyListFromData:blob mutabilityOption:NSPropertyListMutableContainers format:nil errorDescription:&error];
+    
+    if (!error) {
+        
+        // Add peer public key.
+        publicKeyRef = [[SecKeyWrapper sharedWrapper] addPeerPublicKey:me.token
+                                                               keyBits:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kPubTag]]];
+        
+        // Get the unwrapped symmetric key.
+        NSData * symmetricKey = appdelegate.symkey;
+        
+        // Get the padding PKCS#7 flag.
+        pad = [(NSNumber *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kPadTag]] unsignedIntValue];
+        
+        // Get the encrypted message and decrypt.
+        data = [[SecKeyWrapper sharedWrapper]	doCipher:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kMesTag]]
+                                                        key:symmetricKey
+                                                    context:kCCDecrypt
+                                                    padding:&pad];
+        
+        // Verify the signature.
+        verified = [[SecKeyWrapper sharedWrapper] verifySignature:data
+                                                        secKeyRef:publicKeyRef
+                                                        signature:(NSData *)[message objectForKey:[NSString stringWithUTF8String:(const char *)kSigTag]]];
+        
+        [[SecKeyWrapper sharedWrapper] removePeerPublicKey:me.token];
+        
+        if (!verified)
+            return  nil;
+        
+        // Clean up by removing the peer public key.
+        
+    }
+    else
+    {
+        // LOGGING_FACILITY( 0, error );
+        return  nil;
+    }
+    
+    return data;
+}
+
+
+-(NSData *) _encryptData:(NSData *) blog
+{
+    NSString * error = nil;
+    SecKeyRef peerPublicKeyRef = NULL;
+    CCOptions pad = 0;
+    
+    NSMutableDictionary * messageHolder = [[NSMutableDictionary alloc] init];
+    
+    Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    
+    // Acquire handle to public key.
+    peerPublicKeyRef = [[SecKeyWrapper sharedWrapper] addPeerPublicKey:friend.token keyBits:friend.publickey];
+    
+    //NSData * symmetricKey = [[SecKeyWrapper sharedWrapper] getSymmetricKeyBytes];
+    NSData * symmetricKey = appdelegate.symkey;
+    
+    //NSData *plainText = [blog dataUsingEncoding:NSUTF8StringEncoding];
+    
+    LOGGING_FACILITY( peerPublicKeyRef, @"Could not establish client handle to public key." );
+    
+    // Add the public key.
+    [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] getPublicKeyBits]
+                      forKey:[NSString stringWithUTF8String:(const char *)kPubTag]];
+    
+    // Add the signature to the message holder.
+    [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] getSignatureBytes:blog]
+                      forKey:[NSString stringWithUTF8String:(const char *)kSigTag]];
+    
+    // Add the encrypted message.
+    [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] doCipher:blog key:symmetricKey context:kCCEncrypt padding:&pad]
+                      forKey:[NSString stringWithUTF8String:(const char *)kMesTag]];
+    
+    // Add the padding PKCS#7 flag.
+    [messageHolder	setObject:[NSNumber numberWithUnsignedInt:pad]
+                      forKey:[NSString stringWithUTF8String:(const char *)kPadTag]];
+    
+    // Add the wrapped symmetric key.
+    [messageHolder	setObject:[[SecKeyWrapper sharedWrapper] wrapSymmetricKey:symmetricKey keyRef:peerPublicKeyRef]
+                      forKey:[NSString stringWithUTF8String:(const char *)kSymTag]];
+    
+    NSData * message = [NSPropertyListSerialization dataFromPropertyList:messageHolder format:NSPropertyListBinaryFormat_v1_0 errorDescription:&error];
+    
+    [[SecKeyWrapper sharedWrapper] removePeerPublicKey:friend.token];
+    return message;
+}
 
 -(NSData *) _encryptMessage:(NSString *) blog
 {
@@ -660,6 +771,8 @@ PFObject *newMessage;
     [newMessage saveInBackgroundWithTarget: self selector:@selector(nowPush: error:)];
     
     text = @"";
+    
+    [self scrollToBottomAnimated:YES];
     //[self finishSend];
 }
 
