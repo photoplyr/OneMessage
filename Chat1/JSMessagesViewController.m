@@ -213,12 +213,18 @@
 {
     JSBubbleMessageType type = [self.delegate messageTypeForRowAtIndexPath:indexPath];
     
-    UIImageView *bubbleImageView = [self.delegate bubbleImageViewWithType:type
+    id<JSMessageData> message = [self.dataSource messageForRowAtIndexPath:indexPath];
+ 
+    
+    UIImageView *bubbleImageView;
+    
+//        bubbleImageView = [[UIImageView alloc] init];
+//        else
+    bubbleImageView = [self.delegate bubbleImageViewWithType:type
                                                         forRowAtIndexPath:indexPath];
     
-    id<JSMessageData> message = [self.dataSource messageForRowAtIndexPath:indexPath];
     
-    UIImageView *avatar = [self.dataSource avatarImageViewForRowAtIndexPath:indexPath sender:[message sender]];
+    //UIImageView *avatar = [self.dataSource avatarImageViewForRowAtIndexPath:indexPath sender:[message sender]];
     
     BOOL displayTimestamp = YES;
     if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)]) {
@@ -231,27 +237,66 @@
     }
 
     if (!CellIdentifier) {
-        CellIdentifier = [NSString stringWithFormat:@"JSMessageCell_%d_%d_%d_%d", (int)type, displayTimestamp, avatar != nil, [message sender] != nil];
+        CellIdentifier = [NSString stringWithFormat:@"JSMessageCell_%d_%d_%d_%d", (int)type, displayTimestamp, NO, [message sender] != nil];
     }
     
     JSBubbleMessageCell *cell = (JSBubbleMessageCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-    if (!cell) {
+     if ([message image] != nil)
+     {
+         
+         // Add the Parse.com code to load the image
+         
+         //UIImage *im = [[UIImage alloc] initWithData:[message image]];
+         //bubbleImageView = [[UIImageView alloc] initWithImage:im ];
+         //bubbleImageView.frame = CGRectMake(0, 0, 200, 200);
+     }
+    
+  //  if (!cell) {
         cell = [[JSBubbleMessageCell alloc] initWithBubbleType:type
                                                bubbleImageView:bubbleImageView
                                                        message:message
                                              displaysTimestamp:displayTimestamp
-                                                     hasAvatar:avatar != nil
+                                                     hasAvatar:NO
                                                reuseIdentifier:CellIdentifier];
-    }
+    
+    
+  //  }
+ 
+    
     
     [cell setMessage:message];
-    [cell setAvatarImageView:avatar];
+    //[cell setAvatarImageView:avatar];
     [cell setBackgroundColor:tableView.backgroundColor];
 	
     if ([self.delegate respondsToSelector:@selector(configureCell:atIndexPath:)]) {
         [self.delegate configureCell:cell atIndexPath:indexPath];
     }
+  
+    
+    // Handle new Image photos
+    if ([message image] != nil)
+    {
+        UIImage *im = [[UIImage alloc] initWithData:[message image]];
+        UIImageView *newImage = [[UIImageView alloc] initWithImage:im];
+        
+        newImage.layer.cornerRadius = 5.0;
+        newImage.layer.masksToBounds = YES;
+        newImage.contentMode = UIViewContentModeScaleAspectFill;
+        [cell addSubview:newImage];
+        
+        CGRect rect = cell.bubbleView.bubbleFrame;
+        rect.size.width = 80;
+        rect.size.height = 80;
+        rect.origin.y = rect.origin.y + 12;
+        
+        if (rect.origin.x > self.view.center.x)
+            rect.origin.x = self.view.frame.size.width - rect.size.width  - 10;
+          else
+              rect.origin.x = 15;
+        
+        newImage.frame = rect;
+     }
     
     return cell;
 }
@@ -261,16 +306,29 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     id<JSMessageData> message = [self.dataSource messageForRowAtIndexPath:indexPath];
-    UIImageView *avatar = [self.dataSource avatarImageViewForRowAtIndexPath:indexPath sender:[message sender]];
+    //UIImageView *avatar = [self.dataSource avatarImageViewForRowAtIndexPath:indexPath sender:[message sender]];
     
     BOOL displayTimestamp = YES;
-    if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)]) {
+    
+    if ([self.delegate respondsToSelector:@selector(shouldDisplayTimestampForRowAtIndexPath:)])
+    {
         displayTimestamp = [self.delegate shouldDisplayTimestampForRowAtIndexPath:indexPath];
     }
     
-    return [JSBubbleMessageCell neededHeightForBubbleMessageCellWithMessage:message
-                                                             displaysAvatar:avatar != nil
-                                                          displaysTimestamp:displayTimestamp];
+    CGFloat height = [JSBubbleMessageCell neededHeightForBubbleMessageCellWithMessage:message
+                                                                        displaysAvatar:NO
+                                                                     displaysTimestamp:displayTimestamp];
+    
+    if ([message image] != nil)
+    {
+        UIImage *im = [[UIImage alloc] initWithData:[message image]];
+        height = im.size.height;
+        
+        if (height > 120)
+            height = 120;
+    }
+    
+    return height;
 }
 
 #pragma mark - Messages view controller
@@ -318,7 +376,8 @@
 
 - (BOOL)shouldAllowScroll
 {
-    if (self.isUserScrolling) {
+    if (self.isUserScrolling)
+    {
         if ([self.delegate respondsToSelector:@selector(shouldPreventScrollToBottomWhileUserScrolling)]
            && [self.delegate shouldPreventScrollToBottomWhileUserScrolling]) {
             return NO;

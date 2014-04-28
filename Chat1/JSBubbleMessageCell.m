@@ -255,6 +255,15 @@ static const CGFloat kJSSubtitleLabelHeight = 15.0f;
     [self setSubtitle:[message sender]];
 }
 
+- (void)setBullbleImageView:(UIImageView *)imageView
+{
+    [_avatarImageView removeFromSuperview];
+    _avatarImageView = nil;
+
+    
+    [self configureAvatarImageView:imageView forMessageType:[self messageType]];
+}
+
 - (void)setAvatarImageView:(UIImageView *)imageView
 {
     [_avatarImageView removeFromSuperview];

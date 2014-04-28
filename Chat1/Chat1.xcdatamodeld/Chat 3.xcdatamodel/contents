@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="1.3" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13C1021" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Friends" representedClassName="Friends" syncable="YES">
+        <attribute name="approved" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="badge" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="publickey" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="symkey" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="token" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Me" representedClassName="Me" syncable="YES">
+        <attribute name="badge" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="lastchattoken" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="publickey" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="symkey" optional="YES" attributeType="Binary" syncable="YES"/>
+        <attribute name="token" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="Messager" representedClassName="Messager" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dirty" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="image" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="read" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="soid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="toid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="uploaded" optional="YES" attributeType="Boolean" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Friends" positionX="-45" positionY="54" width="128" height="135"/>
+        <element name="Me" positionX="-45" positionY="63" width="128" height="133"/>
+        <element name="Messager" positionX="-45" positionY="0" width="128" height="163"/>
+    </elements>
+</model>

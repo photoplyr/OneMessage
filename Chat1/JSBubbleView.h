@@ -30,7 +30,7 @@
 /**
  *  Returns the image view containing the bubble image for this bubble view.
  */
-@property (weak, nonatomic, readonly) UIImageView *bubbleImageView;
+@property (weak, nonatomic) UIImageView *bubbleImageView;
 
 /**
  *  Returns the text view containing the message text for this bubble view.

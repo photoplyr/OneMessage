@@ -83,6 +83,8 @@
  */
 - (void)setAvatarImageView:(UIImageView *)imageView;
 
+- (void)setBullbleImageView:(UIImageView *)imageView;
+
 #pragma mark - Getters
 
 /**

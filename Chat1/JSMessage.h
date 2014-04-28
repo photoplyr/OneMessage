@@ -35,6 +35,12 @@
  */
 @property (strong, nonatomic) NSDate *date;
 
+/**
+ *  The date that the message was sent. The default value is `nil`.
+ */
+@property (copy, nonatomic) NSData *image;
+
+
 #pragma mark - Initialization
 
 /**
@@ -47,6 +53,10 @@
  *  @return An initialized `JSMessage` object or `nil` if the object could not be successfully initialized.
  */
 - (instancetype)initWithText:(NSString *)text
+                      sender:(NSString *)sender
+                        date:(NSDate *)date;
+
+- (instancetype)initWithImage:(NSData *)image
                       sender:(NSString *)sender
                         date:(NSDate *)date;
 

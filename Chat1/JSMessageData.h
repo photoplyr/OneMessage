@@ -40,4 +40,10 @@
  */
 - (NSDate *)date;
 
+/**
+ *  @return The date that the message was sent.
+ */
+- (NSData *)image;
+
+
 @end

@@ -22,8 +22,10 @@
 		4A32EFBA18EB63DD00CF66DA /* Friends.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A32EFB918EB63DD00CF66DA /* Friends.m */; };
 		4A3F9C8B18DCD0C10023C00C /* JSQSystemSoundPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9C8A18DCD0C10023C00C /* JSQSystemSoundPlayer.m */; };
 		4A3F9CA918DCE0A50023C00C /* SecKeyWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		4A6B3CD6190AE5410021D7F0 /* PhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A6B3CD5190AE5410021D7F0 /* PhotoViewController.m */; };
 		4A887D6D18DC9DC300CC607E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A887D6B18DC9DC300CC607E /* libcrypto.a */; };
 		4A887D6E18DC9DC300CC607E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A887D6C18DC9DC300CC607E /* libssl.a */; };
+		4A9759C119098AB4009160FC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4A9759C019098AB4009160FC /* Images.xcassets */; };
 		4AAC54D518D8E33300AD6090 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AAC54D418D8E33300AD6090 /* Parse.framework */; };
 		4AAC54D718D8E3AD00AD6090 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AAC54D618D8E3AD00AD6090 /* CFNetwork.framework */; };
 		4AAC54D918D8E3C900AD6090 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AAC54D818D8E3C900AD6090 /* AudioToolbox.framework */; };
@@ -49,7 +51,6 @@
 		4ACC3BBF18D7A43F0041AC99 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ACC3BBE18D7A43F0041AC99 /* AppDelegate.m */; };
 		4ACC3BC218D7A43F0041AC99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4ACC3BC018D7A43F0041AC99 /* Main.storyboard */; };
 		4ACC3BC818D7A43F0041AC99 /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ACC3BC718D7A43F0041AC99 /* ChatViewController.m */; };
-		4ACC3BCD18D7A43F0041AC99 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4ACC3BCC18D7A43F0041AC99 /* Images.xcassets */; };
 		4ACC3BD418D7A43F0041AC99 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ACC3BD318D7A43F0041AC99 /* XCTest.framework */; };
 		4ACC3BD518D7A43F0041AC99 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ACC3BAC18D7A43F0041AC99 /* Foundation.framework */; };
 		4ACC3BD618D7A43F0041AC99 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ACC3BB018D7A43F0041AC99 /* UIKit.framework */; };
@@ -125,8 +126,13 @@
 		4A3F9CA218DCE0A50023C00C /* CryptoCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCommon.h; sourceTree = "<group>"; };
 		4A3F9CA518DCE0A50023C00C /* SecKeyWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecKeyWrapper.h; sourceTree = "<group>"; };
 		4A3F9CA618DCE0A50023C00C /* SecKeyWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecKeyWrapper.m; sourceTree = "<group>"; };
+		4A6B3CD4190AE5410021D7F0 /* PhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoViewController.h; sourceTree = "<group>"; };
+		4A6B3CD5190AE5410021D7F0 /* PhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoViewController.m; sourceTree = "<group>"; };
 		4A887D6B18DC9DC300CC607E /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		4A887D6C18DC9DC300CC607E /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
+		4A9759BD19098AA9009160FC /* OneMessage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = OneMessage.xcodeproj; sourceTree = SOURCE_ROOT; };
+		4A9759C019098AB4009160FC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		4A9759C219099074009160FC /* Chat 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "Chat 3.xcdatamodel"; sourceTree = "<group>"; };
 		4AAC54D418D8E33300AD6090 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		4AAC54D618D8E3AD00AD6090 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		4AAC54D818D8E3C900AD6090 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -165,7 +171,6 @@
 		4ACC3BC118D7A43F0041AC99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4ACC3BC618D7A43F0041AC99 /* ChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatViewController.h; sourceTree = "<group>"; };
 		4ACC3BC718D7A43F0041AC99 /* ChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
-		4ACC3BCC18D7A43F0041AC99 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		4ACC3BD218D7A43F0041AC99 /* Chat1Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Chat1Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4ACC3BD318D7A43F0041AC99 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		4ACC3BDC18D7A43F0041AC99 /* Chat1Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Chat1Tests-Info.plist"; sourceTree = "<group>"; };
@@ -315,6 +320,11 @@
 			name = CRYPTO;
 			sourceTree = "<group>";
 		};
+		4A9759BE19098AA9009160FC /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 		4AAC54EC18DA2B1500AD6090 /* Drawer */ = {
 			isa = PBXGroup;
 			children = (
@@ -401,13 +411,16 @@
 				4ACC3BC018D7A43F0041AC99 /* Main.storyboard */,
 				4ACD7EB818DA31CB002AD0A1 /* WebViewController.h */,
 				4ACD7EB918DA31CB002AD0A1 /* WebViewController.m */,
+				4A6B3CD4190AE5410021D7F0 /* PhotoViewController.h */,
+				4A6B3CD5190AE5410021D7F0 /* PhotoViewController.m */,
 				4ACC3C1D18D8A8B90041AC99 /* NavigationViewController.h */,
 				4ACC3C1E18D8A8B90041AC99 /* NavigationViewController.m */,
 				4ACD7EB518DA30DC002AD0A1 /* FriendsViewController.h */,
 				4ACD7EB618DA30DC002AD0A1 /* FriendsViewController.m */,
 				4ACC3BC618D7A43F0041AC99 /* ChatViewController.h */,
 				4ACC3BC718D7A43F0041AC99 /* ChatViewController.m */,
-				4ACC3BCC18D7A43F0041AC99 /* Images.xcassets */,
+				4A9759C019098AB4009160FC /* Images.xcassets */,
+				4A9759BD19098AA9009160FC /* OneMessage.xcodeproj */,
 				4ACC3C2C18D8BB860041AC99 /* Chat1.xcdatamodeld */,
 				4ACC3BB518D7A43F0041AC99 /* Supporting Files */,
 			);
@@ -618,6 +631,12 @@
 			mainGroup = 4ACC3BA018D7A43E0041AC99;
 			productRefGroup = 4ACC3BAA18D7A43F0041AC99 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 4A9759BE19098AA9009160FC /* Products */;
+					ProjectRef = 4A9759BD19098AA9009160FC /* OneMessage.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				4ACC3BA818D7A43F0041AC99 /* Chat1 */,
@@ -631,7 +650,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4ACC3BCD18D7A43F0041AC99 /* Images.xcassets in Resources */,
+				4A9759C119098AB4009160FC /* Images.xcassets in Resources */,
 				4ACC3BB918D7A43F0041AC99 /* InfoPlist.strings in Resources */,
 				4ACC3BC218D7A43F0041AC99 /* Main.storyboard in Resources */,
 			);
@@ -693,6 +712,7 @@
 				4AAC54FC18DA2B2500AD6090 /* UIViewController+MMDrawerController.m in Sources */,
 				4A15D4DF18E4ADBB00821466 /* NSDictionary+UrlEncoding.m in Sources */,
 				4AAC54FA18DA2B2500AD6090 /* MMDrawerController.m in Sources */,
+				4A6B3CD6190AE5410021D7F0 /* PhotoViewController.m in Sources */,
 				4AAC54FE18DA2B2500AD6090 /* MMDrawerVisualState.m in Sources */,
 				4A15D4D818E4AD8E00821466 /* XMLParser.m in Sources */,
 				4ACC3C0A18D7A4520041AC99 /* JSDismissiveTextView.m in Sources */,
@@ -958,9 +978,10 @@
 			isa = XCVersionGroup;
 			children = (
 				4ACC3C2F18D8BC250041AC99 /* Chat2.xcdatamodel */,
+				4A9759C219099074009160FC /* Chat 3.xcdatamodel */,
 				4ACC3C2D18D8BB860041AC99 /* Chat1.xcdatamodel */,
 			);
-			currentVersion = 4ACC3C2F18D8BC250041AC99 /* Chat2.xcdatamodel */;
+			currentVersion = 4A9759C219099074009160FC /* Chat 3.xcdatamodel */;
 			path = Chat1.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

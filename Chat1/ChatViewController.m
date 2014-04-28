@@ -12,6 +12,7 @@
 #import "Messager.h"
 #import "NuRSAKey.h"
 #import "TWMessageBarManager.h"
+#import "PhotoViewController.h"
 
 #import "WebViewController.h"
 @interface ChatViewController ()
@@ -73,14 +74,228 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.sender = [defaults stringForKey:APPNAME];
     
+    self.progress = [[UIProgressView alloc] initWithFrame:CGRectMake(0, 0, 320, 5)];
+    [self.view addSubview:self.progress];
+    
+    [self.view bringSubviewToFront:self.progress];
+    
     if (appdelegate.tokentarget == nil)
     {
         appdelegate.tokentarget = me.lastchattoken;
     }
+    
     [self loadSymKey];
     [self loadMessages:nil];
     [self scrollToBottomAnimated:NO];
 }
+
+
+#pragma mark - Camera Actions
+- (IBAction)camera:(id)sender
+{
+    if ([UIImagePickerController isSourceTypeAvailable:
+         UIImagePickerControllerSourceTypeCamera] == YES){
+        // Create image picker controller
+        UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+        
+        // Set source to the camera
+        imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
+//        imagePicker.allowsEditing = YES;
+//        imagePicker.showsCameraControls = YES;
+//        // Delegate is self
+        imagePicker.delegate = self;
+        
+        // Show image picker
+        [self presentViewController:imagePicker animated:YES completion:nil];
+    }
+}
+
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    // Access the uncropped image from info dictionary
+    UIImage *image = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
+    
+    // Dismiss controller
+    [picker  dismissViewControllerAnimated:YES completion:nil];
+    
+    image = [self scaleAndRotateImage:image];
+    
+    // Upload image
+    NSData *imageData = UIImagePNGRepresentation(image);
+    [self uploadImage:imageData];
+}
+
+
+- (UIImage *)scaleAndRotateImage:(UIImage *)image {
+    int kMaxResolution = 640; // Or whatever
+    
+    CGImageRef imgRef = image.CGImage;
+    
+    CGFloat width = CGImageGetWidth(imgRef);
+    CGFloat height = CGImageGetHeight(imgRef);
+    
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    CGRect bounds = CGRectMake(0, 0, width, height);
+    
+    if (width > kMaxResolution || height > kMaxResolution) {
+        CGFloat ratio = width/height;
+        if (ratio > 1) {
+            bounds.size.width = kMaxResolution;
+            bounds.size.height = roundf(bounds.size.width / ratio);
+        }
+        else {
+            bounds.size.height = kMaxResolution;
+            bounds.size.width = roundf(bounds.size.height * ratio);
+        }
+    }
+    
+    CGFloat scaleRatio = bounds.size.width / width;
+    CGSize imageSize = CGSizeMake(CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
+    CGFloat boundHeight;
+    UIImageOrientation orient = image.imageOrientation;
+    switch(orient) {
+            
+        case UIImageOrientationUp: //EXIF = 1
+            transform = CGAffineTransformIdentity;
+            break;
+            
+        case UIImageOrientationUpMirrored: //EXIF = 2
+            transform = CGAffineTransformMakeTranslation(imageSize.width, 0.0);
+            transform = CGAffineTransformScale(transform, -1.0, 1.0);
+            break;
+            
+        case UIImageOrientationDown: //EXIF = 3
+            transform = CGAffineTransformMakeTranslation(imageSize.width, imageSize.height);
+            transform = CGAffineTransformRotate(transform, M_PI);
+            break;
+            
+        case UIImageOrientationDownMirrored: //EXIF = 4
+            transform = CGAffineTransformMakeTranslation(0.0, imageSize.height);
+            transform = CGAffineTransformScale(transform, 1.0, -1.0);
+            break;
+            
+        case UIImageOrientationLeftMirrored: //EXIF = 5
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeTranslation(imageSize.height, imageSize.width);
+            transform = CGAffineTransformScale(transform, -1.0, 1.0);
+            transform = CGAffineTransformRotate(transform, 3.0 * M_PI / 2.0);
+            break;
+            
+        case UIImageOrientationLeft: //EXIF = 6
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeTranslation(0.0, imageSize.width);
+            transform = CGAffineTransformRotate(transform, 3.0 * M_PI / 2.0);
+            break;
+            
+        case UIImageOrientationRightMirrored: //EXIF = 7
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeScale(-1.0, 1.0);
+            transform = CGAffineTransformRotate(transform, M_PI / 2.0);
+            break;
+            
+        case UIImageOrientationRight: //EXIF = 8
+            boundHeight = bounds.size.height;
+            bounds.size.height = bounds.size.width;
+            bounds.size.width = boundHeight;
+            transform = CGAffineTransformMakeTranslation(imageSize.height, 0.0);
+            transform = CGAffineTransformRotate(transform, M_PI / 2.0);
+            break;
+            
+        default:
+            [NSException raise:NSInternalInconsistencyException format:@"Invalid image orientation"];
+            
+    }
+    
+    UIGraphicsBeginImageContext(bounds.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft) {
+        CGContextScaleCTM(context, -scaleRatio, scaleRatio);
+        CGContextTranslateCTM(context, -height, 0);
+    }
+    else {
+        CGContextScaleCTM(context, scaleRatio, -scaleRatio);
+        CGContextTranslateCTM(context, 0, -height);
+    }
+    
+    CGContextConcatCTM(context, transform);
+    
+    CGContextDrawImage(UIGraphicsGetCurrentContext(), CGRectMake(0, 0, width, height), imgRef);
+    UIImage *imageCopy = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return imageCopy;
+}
+
+-(void) uploadImage:(NSData *) imageData
+{
+    Friends *friend = [appdelegate getFriend:appdelegate.tokentarget];
+    
+    
+    if (![friend.approved boolValue])
+    {
+        [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Message "
+                                                       description:@"Your are not approved to send a message to this friend"
+                                                              type:TWMessageBarMessageTypeError];
+        
+        return;
+    }
+    
+    PFFile *imageFile = [PFFile fileWithName:@"Image.png" data:imageData];
+    
+    //HUD creation here (see example for code)
+    
+    // Save PFFile
+    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            // Hide old HUD, show completed HUD (see example for code)
+            
+            // Create a PFObject around a PFFile and associate it with the current user
+            PFObject *newMessage = [PFObject objectWithClassName:APPNAME];
+            [newMessage setObject:imageFile forKey:@"imageFile"];
+            
+            [newMessage setObject:me.name forKey:@"userName"];
+            
+            [newMessage setObject:me.token forKey:@"sourceToken"];
+            [newMessage setObject:friend.token forKey:@"targetToken"];
+            
+            [newMessage setObject:me.token forKey:@"device"];
+            [newMessage setObject:[NSDate date] forKey:@"date"];
+            [newMessage setObject:[NSNumber numberWithBool:YES] forKey:@"imageAttached"];
+            
+            [newMessage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (!error) {
+                    self.progress.progress  = 0;
+                    
+                    NSLog(@"Uploaded photos!");
+                    [self loadLocalChat:nil];
+                }
+                else{
+                    // Log details of the failure
+                    NSLog(@"Error: %@ %@", error, [error userInfo]);
+                }
+            }];
+        }
+        else{
+            // [HUD hide:YES];
+            // Log details of the failure
+            NSLog(@"Error: %@ %@", error, [error userInfo]);
+        }
+    } progressBlock:^(int percentDone) {
+        
+        self.progress.progress = (float)percentDone/100;
+        // Update your progress spinner here. percentDone will be between 0 and 100.
+        //HUD.progress = (float)percentDone/100;
+    }];
+}
+
 
 #pragma mark - Actions
 
@@ -206,43 +421,54 @@
                  // The count request succeeded. Log the count
                  NSLog(@"There are currently %d entries", number);
                  
-                     NSLog(@"Retrieving data");
-                     int theLimit;
-                     
-                     theLimit = MAX_ENTRIES_LOADED - (int)[self.messages count];
-                     
-                     if (theLimit >MAX_ENTRIES_LOADED)
+                 NSLog(@"Retrieving data");
+                 int theLimit;
+                 
+                 theLimit = MAX_ENTRIES_LOADED - (int)[self.messages count];
+                 
+                 if (theLimit >MAX_ENTRIES_LOADED)
                      theLimit = MAX_ENTRIES_LOADED;
-                     
-                     query.limit = theLimit;
-                     
-                     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+                 
+                 query.limit = theLimit;
+                 
+                 [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error)
+                  {
+                      if (!error)
                       {
-                          if (!error)
+                          // The find succeeded.
+                          NSLog(@"Successfully retrieved %lu chats.", (unsigned long)objects.count);
+                          
+                          if ([objects count] != [self.messages count])
                           {
-                              // The find succeeded.
-                              NSLog(@"Successfully retrieved %lu chats.", (unsigned long)objects.count);
+                              [self.messages removeAllObjects];
                               
-                              if ([objects count] != [self.messages count])
+                              for(id message in objects)
                               {
-                                  [self.messages removeAllObjects];
                                   
-                                  for(id message in objects)
+                                  if ([[message objectForKey:@"imageAttached"] intValue] == 1)
+                                  {
+                                      PFFile *thumbnail = [message objectForKey:@"imageFile"];
+                                      NSData *data = thumbnail.getData;
+                                      
+                                      [self.messages addObject:[[JSMessage alloc] initWithImage:data sender:[message objectForKey:@"userName"] date:[message objectForKey:@"date"]]];
+                                  }
+                                  else
                                   {
                                       [self.messages addObject:[[JSMessage alloc] initWithText:[self decryptMessage:[message objectForKey:@"cryptext"]] sender:[message objectForKey:@"userName"] date:[message objectForKey:@"date"]]];
                                   }
                               }
-                              
-                              [self.tableView reloadData];
-                              [self scrollToBottomAnimated:YES];
                           }
-                          else
-                          {
-                              // Log details of the failure
-                              NSLog(@"Error: %@ %@", error, [error userInfo]);
-                          }
-                      }];
-                 }
+                          
+                          [self.tableView reloadData];
+                          [self scrollToBottomAnimated:YES];
+                      }
+                      else
+                      {
+                          // Log details of the failure
+                          NSLog(@"Error: %@ %@", error, [error userInfo]);
+                      }
+                  }];
+             }
              
          }];
         
@@ -312,7 +538,7 @@
         // Clean up by removing the peer public key.
         
     } else {
-        LOGGING_FACILITY( 0, error );
+        // LOGGING_FACILITY( 0, error );
         return  nil;
     }
     
@@ -404,6 +630,8 @@ PFObject *newMessage;
     [newMessage setObject:text forKey:@"text"];
     [newMessage setObject:message forKey:@"cryptext"];
     
+    [newMessage setObject:[NSNumber numberWithBool:NO] forKey:@"imageAttached"];
+    
     [newMessage setObject:me.name forKey:@"userName"];
     
     [newMessage setObject:me.token forKey:@"sourceToken"];
@@ -458,10 +686,17 @@ PFObject *newMessage;
     
     JSMessage *message = [self.messages objectAtIndex:indexPath.row];
     
-    if ([me.name isEqualToString:(NSString *)message.sender])
-        return [JSBubbleImageViewFactory bubbleImageViewForType:type color:[UIColor js_bubbleGreenColor]];
+    if (message.image == nil)
+    {
+        if ([me.name isEqualToString:(NSString *)message.sender])
+            return [JSBubbleImageViewFactory bubbleImageViewForType:type color:[UIColor js_bubbleGreenColor]];
+        else
+            return [JSBubbleImageViewFactory bubbleImageViewForType:type color:[UIColor js_bubbleBlueColor]];
+    }
     else
-        return [JSBubbleImageViewFactory bubbleImageViewForType:type color:[UIColor js_bubbleBlueColor]];
+    {
+        return  nil;
+    }
 }
 
 - (JSMessageInputViewStyle)inputViewStyle
@@ -478,6 +713,21 @@ PFObject *newMessage;
         return YES;
     }
     return NO;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    JSMessage *message = [self.messages objectAtIndex:indexPath.row];
+    
+    if ([ message image] != nil)
+    {
+        
+        PhotoViewController *v = [self.storyboard instantiateViewControllerWithIdentifier:@"photo"];
+        [self.navigationController pushViewController:v animated:YES];
+        v.imageData = [message image];
+    }
+    
 }
 
 //

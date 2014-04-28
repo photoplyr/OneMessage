@@ -10,12 +10,12 @@
 #import "JSMessagesViewController.h"
 
 
-@interface ChatViewController : JSMessagesViewController <JSMessagesViewDataSource, JSMessagesViewDelegate>
+@interface ChatViewController : JSMessagesViewController <JSMessagesViewDataSource, JSMessagesViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 
 @property (strong, nonatomic) NSMutableArray *messages;
 @property (strong, nonatomic) NSDictionary *avatars;
-
+@property (nonatomic, strong)  UIProgressView *progress;
 - (NSString *)decryptMessage:(NSData *)blob;
 
 @end
