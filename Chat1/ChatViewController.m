@@ -69,7 +69,7 @@
     
     me = [appdelegate getMe];
     
-    self.messageInputView.textView.keyboardAppearance = UIKeyboardAppearanceDark;
+    // self.messageInputView.textView.keyboardAppearance = UIKeyboardAppearanceDark;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.sender = [defaults stringForKey:APPNAME];
@@ -94,15 +94,13 @@
 - (IBAction)camera:(id)sender
 {
     if ([UIImagePickerController isSourceTypeAvailable:
-         UIImagePickerControllerSourceTypeCamera] == YES){
+         UIImagePickerControllerSourceTypeCamera] == YES)
+    {
         // Create image picker controller
         UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
         
         // Set source to the camera
         imagePicker.sourceType =  UIImagePickerControllerSourceTypeCamera;
-//        imagePicker.allowsEditing = YES;
-//        imagePicker.showsCameraControls = YES;
-//        // Delegate is self
         imagePicker.delegate = self;
         
         // Show image picker
@@ -127,7 +125,8 @@
 }
 
 
-- (UIImage *)scaleAndRotateImage:(UIImage *)image {
+- (UIImage *)scaleAndRotateImage:(UIImage *)image
+{
     int kMaxResolution = 640; // Or whatever
     
     CGImageRef imgRef = image.CGImage;
@@ -138,13 +137,16 @@
     CGAffineTransform transform = CGAffineTransformIdentity;
     CGRect bounds = CGRectMake(0, 0, width, height);
     
-    if (width > kMaxResolution || height > kMaxResolution) {
+    if (width > kMaxResolution || height > kMaxResolution)
+    {
         CGFloat ratio = width/height;
-        if (ratio > 1) {
+        if (ratio > 1)
+        {
             bounds.size.width = kMaxResolution;
             bounds.size.height = roundf(bounds.size.width / ratio);
         }
-        else {
+        else
+        {
             bounds.size.height = kMaxResolution;
             bounds.size.width = roundf(bounds.size.height * ratio);
         }
@@ -154,7 +156,8 @@
     CGSize imageSize = CGSizeMake(CGImageGetWidth(imgRef), CGImageGetHeight(imgRef));
     CGFloat boundHeight;
     UIImageOrientation orient = image.imageOrientation;
-    switch(orient) {
+    switch(orient)
+    {
             
         case UIImageOrientationUp: //EXIF = 1
             transform = CGAffineTransformIdentity;
@@ -216,11 +219,13 @@
     UIGraphicsBeginImageContext(bounds.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft) {
+    if (orient == UIImageOrientationRight || orient == UIImageOrientationLeft)
+    {
         CGContextScaleCTM(context, -scaleRatio, scaleRatio);
         CGContextTranslateCTM(context, -height, 0);
     }
-    else {
+    else
+    {
         CGContextScaleCTM(context, scaleRatio, -scaleRatio);
         CGContextTranslateCTM(context, 0, -height);
     }
@@ -253,47 +258,55 @@
     //HUD creation here (see example for code)
     
     // Save PFFile
-    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (!error) {
-            // Hide old HUD, show completed HUD (see example for code)
-            
-            // Create a PFObject around a PFFile and associate it with the current user
-            PFObject *newMessage = [PFObject objectWithClassName:APPNAME];
-            [newMessage setObject:imageFile forKey:@"imageFile"];
-            
-            [newMessage setObject:me.name forKey:@"userName"];
-            
-            [newMessage setObject:me.token forKey:@"sourceToken"];
-            [newMessage setObject:friend.token forKey:@"targetToken"];
-            
-            [newMessage setObject:me.token forKey:@"device"];
-            [newMessage setObject:[NSDate date] forKey:@"date"];
-            [newMessage setObject:[NSNumber numberWithBool:YES] forKey:@"imageAttached"];
-            
-            [newMessage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (!error) {
-                    self.progress.progress  = 0;
-                    
-                    NSLog(@"Uploaded photos!");
-                    [self loadLocalChat:nil];
-                }
-                else{
-                    // Log details of the failure
-                    NSLog(@"Error: %@ %@", error, [error userInfo]);
-                }
-            }];
-        }
-        else{
-            // [HUD hide:YES];
-            // Log details of the failure
-            NSLog(@"Error: %@ %@", error, [error userInfo]);
-        }
-    } progressBlock:^(int percentDone) {
-        
-        self.progress.progress = (float)percentDone/100;
-        // Update your progress spinner here. percentDone will be between 0 and 100.
-        //HUD.progress = (float)percentDone/100;
-    }];
+    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error)
+     {
+         if (!error)
+         {
+             // Hide old HUD, show completed HUD (see example for code)
+             
+             // Create a PFObject around a PFFile and associate it with the current user
+             PFObject *newMessage = [PFObject objectWithClassName:APPNAME];
+             [newMessage setObject:imageFile forKey:@"imageFile"];
+             
+             [newMessage setObject:me.name forKey:@"userName"];
+             
+             [newMessage setObject:me.token forKey:@"sourceToken"];
+             [newMessage setObject:friend.token forKey:@"targetToken"];
+             
+             [newMessage setObject:me.token forKey:@"device"];
+             [newMessage setObject:[NSDate date] forKey:@"date"];
+             [newMessage setObject:[NSNumber numberWithBool:YES] forKey:@"imageAttached"];
+             
+             [newMessage saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                 if (!error)
+                 {
+                     self.progress.progress  = 0;
+                     
+                     NSLog(@"Uploaded photos!");
+                     
+                     [self nowPush:[NSNumber numberWithBool:YES] error:error];
+                     [self loadLocalChat:nil];
+                 }
+                 else
+                 {
+                     // Log details of the failure
+                     NSLog(@"Error: %@ %@", error, [error userInfo]);
+                 }
+             }];
+         }
+         else{
+             // [HUD hide:YES];
+             // Log details of the failure
+             NSLog(@"Error: %@ %@", error, [error userInfo]);
+         }
+     }
+                           progressBlock:^(int percentDone)
+     {
+         
+         self.progress.progress = (float)percentDone/100;
+         // Update your progress spinner here. percentDone will be between 0 and 100.
+         //HUD.progress = (float)percentDone/100;
+     }];
 }
 
 
@@ -349,6 +362,8 @@
                  [newMessage setObject:friend.token forKey:@"targetToken"];
                  [newMessage setObject:me.symkey forKey:@"symkey"];
                  [newMessage saveInBackground];
+                 
+                 
              }
              else
              {
@@ -484,7 +499,8 @@
 }
 
 #pragma mark - Messages view delegate: REQUIRED
-- (NSString *)decryptMessage:(NSData *)blob {
+- (NSString *)decryptMessage:(NSData *)blob
+{
     NSString *data = [self _decryptMessage:blob];
     
     return  data;
@@ -496,7 +512,8 @@
     return  data;
 }
 
-- (NSString *)_decryptMessage:(NSData *)blob {
+- (NSString *)_decryptMessage:(NSData *)blob
+{
     NSMutableDictionary * message = nil;
     NSString * error = nil;
     
@@ -537,7 +554,9 @@
         
         // Clean up by removing the peer public key.
         
-    } else {
+    }
+    else
+    {
         // LOGGING_FACILITY( 0, error );
         return  nil;
     }
@@ -603,7 +622,6 @@ PFObject *newMessage;
         [[TWMessageBarManager sharedInstance] showMessageWithTitle:@"Message "
                                                        description:@"Your are not approved to send a message to this friend"
                                                               type:TWMessageBarMessageTypeError];
-        
         return;
     }
     
@@ -727,7 +745,6 @@ PFObject *newMessage;
         [self.navigationController pushViewController:v animated:YES];
         v.imageData = [message image];
     }
-    
 }
 
 //

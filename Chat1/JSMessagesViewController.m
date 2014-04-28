@@ -242,15 +242,15 @@
     
     JSBubbleMessageCell *cell = (JSBubbleMessageCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-     if ([message image] != nil)
-     {
-         
-         // Add the Parse.com code to load the image
-         
-         //UIImage *im = [[UIImage alloc] initWithData:[message image]];
-         //bubbleImageView = [[UIImageView alloc] initWithImage:im ];
-         //bubbleImageView.frame = CGRectMake(0, 0, 200, 200);
-     }
+//     if ([message image] != nil)
+//     {
+//         
+//         // Add the Parse.com code to load the image
+//         
+//         //UIImage *im = [[UIImage alloc] initWithData:[message image]];
+//         //bubbleImageView = [[UIImageView alloc] initWithImage:im ];
+//         //bubbleImageView.frame = CGRectMake(0, 0, 200, 200);
+//     }
     
   //  if (!cell) {
         cell = [[JSBubbleMessageCell alloc] initWithBubbleType:type
@@ -288,7 +288,7 @@
         CGRect rect = cell.bubbleView.bubbleFrame;
         rect.size.width = 80;
         rect.size.height = 80;
-        rect.origin.y = rect.origin.y + 12;
+        rect.origin.y = rect.origin.y + 14;
         
         if (rect.origin.x > self.view.center.x)
             rect.origin.x = self.view.frame.size.width - rect.size.width  - 10;
@@ -339,6 +339,9 @@
     [self textViewDidChange:self.messageInputView.textView];
     [self.messageInputView.textView resignFirstResponder];
     [self.tableView reloadData];
+    
+    //send a message
+    
 }
 
 - (void)setBackgroundColor:(UIColor *)color
